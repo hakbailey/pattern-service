@@ -1,0 +1,15 @@
+[project]
+name = "pattern_service"
+version = "0.1.0"
+description = "Pattern Service Django project"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "Django>=5.0,<6.0",
+    "djangorestframework"
+]
+
+[tool.black]
+line-length = 160
+fast = true
+skip-string-normalization = true
