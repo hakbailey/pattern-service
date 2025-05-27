@@ -1,4 +1,4 @@
-# artifact-management
+# pattern-service
 
 Hi there! We're excited to have you as a contributor.
 
