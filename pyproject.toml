@@ -3,7 +3,7 @@ name = "pattern_service"
 version = "0.1.0"
 description = "Pattern Service Django project"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 dependencies = [
     "Django>=5.0,<6.0",
     "djangorestframework"
@@ -18,3 +18,10 @@ skip-string-normalization = true
 profile = "black"
 force_single_line = true
 line_length = 120
+
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["pattern_service"]

@@ -1,5 +1,5 @@
 ---
-name: linters
+name: Linters
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
@@ -15,7 +15,7 @@ on: # yamllint disable-line rule:truthy
 
 jobs:
   linters:
-    name: linters
+    name: Linters
     uses: ansible-network/github_actions/.github/workflows/tox.yml@main
     with:
       envname: linters

@@ -4,7 +4,7 @@ An Ansible Automation Platform service that automates the deployment (creation a
 
 ## Contributing
 
-- Refer to the [Contributing guide](./CONTRIBUTING.md) to get started developing, testing, and building pattern-service.
+To get started with developing, testing, and building pattern-service, please refer to the [Contributing guide](./CONTRIBUTING.md).
 
 ## License
 

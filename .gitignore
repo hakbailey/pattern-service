@@ -1,8 +1,3 @@
-# Ignore generated schema
-swagger.json
-schema.json
-reference-schema.json
-
 # User level pre-commit hooks
 pre-commit-user
 
