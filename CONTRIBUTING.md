@@ -4,10 +4,13 @@ Hi there! We're excited to have you as a contributor.
 
 ## Table of contents
 
-- [Things to know prior to submitting code](#things-to-know-prior-to-submitting-code)
-- [Setting up your development environment](#setting-up-your-development-environment)
-  - [Prerequisites](#prerequisites)
-  - [Build and Run the Development Environment](#build-and-run-the-development-environment)
+- [pattern-service](#pattern-service)
+  - [Table of contents](#table-of-contents)
+  - [Things to know prior to submitting code](#things-to-know-prior-to-submitting-code)
+    - [Build and Run the Development Environment](#build-and-run-the-development-environment)
+      - [Clone the repo](#clone-the-repo)
+      - [Configure python environment](#configure-python-environment)
+      - [Configure and run the application](#configure-and-run-the-application)
 
 ## Things to know prior to submitting code
 
@@ -37,6 +40,10 @@ Set the virtual environment
 Install required python modules
 
 `pip install -r ./requirements.txt`
+
+Install development python modules
+
+`pip install -r ./requirements-dev.txt`
 
 #### Configure and run the application
 
