@@ -39,11 +39,7 @@ Set the virtual environment
 
 Install required python modules
 
-`pip install -r ./requirements.txt`
-
-Install development python modules
-
-`pip install -r ./requirements-dev.txt`
+`pip install -r ./requirements-all.txt`
 
 #### Configure and run the application
 
