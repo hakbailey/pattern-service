@@ -1,0 +1,51 @@
+# User level pre-commit hooks
+pre-commit-user
+
+
+# Python & setuptools
+*__pycache__
+/build
+/deb-build
+/reprepro
+/rpm-build
+/tar-build
+/setup-bundle-build
+/dist
+/*.egg-info
+*.py[c,o]
+/.eggs
+.python-version
+
+
+# Testing
+.cache
+.coverage
+.tox
+coverage.xml
+htmlcov
+pep8.txt
+scratch
+testem.log
+.pytest_cache/
+
+# Mac OS X
+*.DS_Store
+
+# VSCode
+.vscode/
+
+# Editors
+*.sw[poj]
+*~
+
+# Setup
+setup.log
+backup.log
+restore.log
+setup/tower_setup_conf.yml
+setup/setup.log
+setup/inventory
+tower-backup-*
+
+# DB
+db.sqlite3
