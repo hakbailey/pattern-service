@@ -6,7 +6,7 @@ from django.db import models
 # Create your models here.
 
 
-class Pattern(CommonModel, models.Model):
+class Pattern(models.Model):
     class Meta:
         app_label = 'core'
         ordering = ['id']
@@ -37,10 +37,10 @@ class PatternInstance(CommonModel):
     controller_project_id: models.BigIntegerField = models.BigIntegerField(blank=True)
     controller_ee_id: models.BigIntegerField = models.BigIntegerField(null=True, blank=True)
     credentials: models.JSONField = models.JSONField()
-    executors: models.JSONField = models.JSONField(null=True)
+    executors: models.JSONField = models.JSONField(null=True, blank=True)
 
     pattern: models.ForeignKey = models.ForeignKey(Pattern, on_delete=models.CASCADE, related_name="pattern_instances")
-    controller_labels: models.ManyToManyField = models.ManyToManyField(ControllerLabel, related_name="pattern_instances")
+    controller_labels: models.ManyToManyField = models.ManyToManyField(ControllerLabel, related_name="pattern_instances", blank=True, null=True)
 
 
 class Automation(CommonModel):

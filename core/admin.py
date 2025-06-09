@@ -1,13 +1,8 @@
 from django.contrib import admin
 
-from .models import Automation
-from .models import ControllerLabel
-from .models import Pattern
-from .models import PatternInstance
+from core import models
 
-# Register your models here.
-
-admin.site.register(Pattern)
-admin.site.register(ControllerLabel)
-admin.site.register(PatternInstance)
-admin.site.register(Automation)
+admin.site.register(models.Pattern)
+admin.site.register(models.ControllerLabel)
+admin.site.register(models.PatternInstance)
+admin.site.register(models.Automation)
