@@ -9,6 +9,8 @@ from .serializers import AutomationSerializer
 from .serializers import ControllerLabelSerializer
 from .serializers import PatternInstanceSerializer
 from .serializers import PatternSerializer
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
 
 class CoreViewSet(AnsibleBaseView):
@@ -33,3 +35,13 @@ class PatternInstanceViewSet(CoreViewSet, ModelViewSet):
 class AutomationViewSet(CoreViewSet, ModelViewSet):
     queryset = Automation.objects.all()
     serializer_class = AutomationSerializer
+
+
+@api_view(["GET"])
+def ping(request):
+    return Response(data={"status": "ok"}, status=200)
+
+
+@api_view(["GET"])
+def test(request):
+    return Response(data={"hello": "world"}, status=200)
