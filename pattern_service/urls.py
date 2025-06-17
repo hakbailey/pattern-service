@@ -19,7 +19,8 @@ from django.contrib import admin
 from django.urls import include
 from django.urls import path
 
-from core.views import ping, test
+from core.views import ping
+from core.views import test
 
 urlpatterns = [
     path("admin/", admin.site.urls),
