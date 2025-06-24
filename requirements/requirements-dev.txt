@@ -38,4 +38,4 @@ pyflakes==3.1.0
     # via flake8
 typing-extensions==4.13.2
     # via mypy
-django-ansible-base
+django-ansible-base==2025.5.8
