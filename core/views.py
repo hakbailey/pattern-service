@@ -1,4 +1,6 @@
 from ansible_base.lib.utils.views.ansible_base import AnsibleBaseView
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
 from .models import Automation
@@ -9,8 +11,6 @@ from .serializers import AutomationSerializer
 from .serializers import ControllerLabelSerializer
 from .serializers import PatternInstanceSerializer
 from .serializers import PatternSerializer
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
 
 
 class CoreViewSet(AnsibleBaseView):
