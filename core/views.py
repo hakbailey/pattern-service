@@ -1,4 +1,6 @@
 from ansible_base.lib.utils.views.ansible_base import AnsibleBaseView
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
 from .models import Automation
@@ -33,3 +35,13 @@ class PatternInstanceViewSet(CoreViewSet, ModelViewSet):
 class AutomationViewSet(CoreViewSet, ModelViewSet):
     queryset = Automation.objects.all()
     serializer_class = AutomationSerializer
+
+
+@api_view(["GET"])
+def ping(request):
+    return Response(data={"status": "ok"}, status=200)
+
+
+@api_view(["GET"])
+def test(request):
+    return Response(data={"hello": "world"}, status=200)
