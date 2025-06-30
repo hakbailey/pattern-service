@@ -143,6 +143,10 @@
                                 "description": "Name of the playbook file included in the pattern `automations` directory.",
                                 "type": "string"
                             },
+                            "primary"{
+                                "description": "Whether the playbook is the primary playbook for this job template. If there are multiple job templates included, one should be labeled as the primary job template.",
+                                "type": "boolean"
+                            },
                             "ask_credential_on_launch": {
                                 "description": "Whether the user must select a credential when launching the job template.",
                                 "type": "boolean"
