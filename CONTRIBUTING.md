@@ -9,7 +9,7 @@ Hi there! We're excited to have you as a contributor.
   - [Things to know prior to submitting code](#things-to-know-prior-to-submitting-code)
   - [Build and Run the Development Environment](#build-and-run-the-development-environment)
     - [Clone the repo](#clone-the-repo)
-    - [Configure python environment](#configure-python-environment)
+    - [Configure Python environment](#configure-python-environment)
     - [Configure and run the application](#configure-and-run-the-application)
   - [Testing](#testing)
     - [Running tests locally](#running-tests-locally)
