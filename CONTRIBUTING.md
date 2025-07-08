@@ -30,7 +30,7 @@ If you have not already done so, you will need to clone, or create a local copy,
 For more on how to clone the repo, view [git clone help](https://git-scm.com/docs/git-clone).
 Once you have a local copy, run the commands in the following sections from the root of the project tree.
 
-### Configure python environment
+### Configure Python environment
 
 Create python virtual environment using one of the below commands:
 
