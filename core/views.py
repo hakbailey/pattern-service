@@ -1,4 +1,5 @@
 from ansible_base.lib.utils.views.ansible_base import AnsibleBaseView
+from dispatcherd.publish import submit_task
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -15,6 +16,7 @@ from .serializers import ControllerLabelSerializer
 from .serializers import PatternInstanceSerializer
 from .serializers import PatternSerializer
 from .serializers import TaskSerializer
+from core.tasks import print_hello
 
 
 class CoreViewSet(AnsibleBaseView):
@@ -85,4 +87,5 @@ def ping(request):
 
 @api_view(["GET"])
 def test(request):
-    return Response(data={"hello": "world"}, status=200)
+    submit_task(print_hello)
+    return Response("Task submitted, check dispatcher log output to verify. Should print 'hello world!!'", status=200)

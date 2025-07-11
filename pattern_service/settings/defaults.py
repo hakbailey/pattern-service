@@ -123,3 +123,65 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+DISPATCHERD_DEFAULT_CHANNEL = "pattern"
+DISPATCHERD_CONFIG = {
+    "version": 2,
+    "brokers": {
+        "pg_notify": {
+            "config": {
+                "conninfo": "dbname=pattern user=pattern password=pattern123 host=postgres port=5432",
+            },
+            "channels": [DISPATCHERD_DEFAULT_CHANNEL],
+            "default_publish_channel": DISPATCHERD_DEFAULT_CHANNEL,
+        },
+    },
+    "producers": {},
+    "pool": {"max_workers": 2},
+}
+
+LOG_LEVEL = "DEBUG" if DEBUG else "INFO"
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "simple": {
+            "format": "{levelname} {name} {lineno} {message}",
+            "style": "{",
+        },
+    },
+    "handlers": {
+        "console": {
+            "level": LOG_LEVEL,
+            "class": "logging.StreamHandler",
+            "formatter": "simple",
+        },
+    },
+    "filters": {"require_debug_false": {"()": "django.utils.log.RequireDebugFalse"}},
+    "loggers": {
+        "ansible_base": {
+            "handlers": ["console"],
+            "level": LOG_LEVEL,
+        },
+        "core": {
+            "handlers": ["console"],
+            "level": LOG_LEVEL,
+        },
+        "dispatcherd": {
+            "handlers": ["console"],
+            "level": LOG_LEVEL,
+        },
+        "django": {
+            "handlers": ["console"],
+            "level": "INFO",
+        },
+        "django.request": {
+            "handlers": ["console"],
+            "level": LOG_LEVEL,
+        },
+        "drf_spectacular": {
+            "handlers": ["console"],
+            "level": LOG_LEVEL,
+        },
+    },
+}
