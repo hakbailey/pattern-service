@@ -74,7 +74,7 @@ class PatternViewSetTest(SharedDataMixin, APITestCase):
         pattern = Pattern.objects.get(pattern_name="new_pattern")
         self.assertIsNotNone(pattern)
 
-        # Task id returned directly
+        # Task ID returned directly
         task_id = response.data.get("task_id")
         self.assertIsInstance(task_id, int)
 
@@ -84,9 +84,44 @@ class PatternViewSetTest(SharedDataMixin, APITestCase):
         self.assertEqual(task.details.get("model"), "Pattern")
         self.assertEqual(task.details.get("id"), pattern.id)
 
-    def test_pattern_create_view_with_invalid_data(self):
+    def test_pattern_update_view(self):
+        # Store original values for comparison
+        original_version = self.pattern.collection_version
+
+        url = reverse("pattern-detail", args=[self.pattern.pk])
+        data = {
+            "collection_name": "updated_namespace.mycollection",
+            "collection_version": "2.0.0",  # Updated version
+            "pattern_name": "updated_pattern",
+            "pattern_definition": {"updated": "data"},
+        }
+
+        response = self.client.put(url, data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Verify database change
+        self.pattern.refresh_from_db()
+        self.assertEqual(self.pattern.collection_version, "2.0.0")
+        self.assertEqual(self.pattern.collection_name, "updated_namespace.mycollection")
+        self.assertEqual(self.pattern.pattern_name, "updated_pattern")
+        self.assertNotEqual(self.pattern.collection_version, original_version)
+
+    def test_pattern_delete_view(self):
+        # Create a separate pattern for deletion
+        pattern_to_delete = Pattern.objects.create(
+            collection_name="delete.test", collection_version="1.0.0", pattern_name="deletable_pattern", pattern_definition={}
+        )
+
+        url = reverse("pattern-detail", args=[pattern_to_delete.pk])
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+        # Verify database change - pattern should be deleted
+        self.assertFalse(Pattern.objects.filter(pk=pattern_to_delete.pk).exists())
+
+    def test_pattern_create_with_invalid_data(self):
         url = reverse("pattern-list")
-        data = {"collection_name": "", "collection_version": "1.0.0", "pattern_name": "test_pattern"}  # Invalid: empty string
+        data = {"invalid_field": "invalid"}
 
         response = self.client.post(url, data, format="json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -114,7 +149,6 @@ class ControllerLabelViewSetTest(SharedDataMixin, APITestCase):
         response = self.client.post(url, data, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-        # Verify database change
         label = ControllerLabel.objects.get(label_id=10)
         self.assertIsNotNone(label)
         self.assertEqual(label.label_id, 10)
@@ -131,7 +165,6 @@ class ControllerLabelViewSetTest(SharedDataMixin, APITestCase):
         self.assertEqual(self.label.label_id, 15)
 
     def test_label_delete_view(self):
-        # Create a separate label for deletion
         label_to_delete = ControllerLabel.objects.create(label_id=99)
 
         url = reverse("controllerlabel-detail", args=[label_to_delete.id])
@@ -154,6 +187,74 @@ class PatternInstanceViewSetTest(SharedDataMixin, APITestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["organization_id"], 1)
+
+    def test_pattern_instance_create_view(self):
+        url = reverse("patterninstance-list")
+        data = {
+            "organization_id": 2,
+            "controller_project_id": 0,
+            "controller_ee_id": 0,
+            "credentials": {"user": "tester"},
+            "executors": [],
+            "pattern": self.pattern.id,
+        }
+
+        response = self.client.post(url, data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_202_ACCEPTED)
+
+        # PatternInstance created - verify it exists
+        instance = PatternInstance.objects.get(organization_id=2)
+        self.assertIsNotNone(instance)
+        # Verify the fields were saved correctly
+        self.assertEqual(instance.organization_id, 2)
+        self.assertEqual(instance.credentials["user"], "tester")
+
+        # Task id returned directly
+        task_id = response.data.get("task_id")
+        self.assertIsInstance(task_id, int)
+
+        # Task exists
+        task = Task.objects.get(id=task_id)
+        self.assertEqual(task.status, "Initiated")
+        self.assertEqual(task.details.get("model"), "PatternInstance")
+        self.assertEqual(task.details.get("id"), instance.id)
+
+    def test_pattern_instance_update_view(self):
+        url = reverse("patterninstance-detail", args=[self.pattern_instance.pk])
+        data = {  # Cannot change/update controller_project_id nor controller_ee_id due to read_only_fields serializer constraint
+            "organization_id": 3,
+            "credentials": {"user": "updated_admin"},
+            "executors": [{"executor_type": "updated"}],
+            "pattern": self.pattern.id,
+        }
+
+        response = self.client.put(url, data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        self.pattern_instance.refresh_from_db()
+        self.assertEqual(self.pattern_instance.organization_id, 3)
+        self.assertEqual(self.pattern_instance.credentials["user"], "updated_admin")
+        self.assertEqual(self.pattern_instance.executors[0]["executor_type"], "updated")
+
+    def test_pattern_instance_delete_view(self):
+        # Create a separate instance for deletion
+        instance_to_delete = PatternInstance.objects.create(
+            organization_id=999, controller_project_id=111, controller_ee_id=222, credentials={"user": "deletable"}, pattern=self.pattern
+        )
+
+        url = reverse("patterninstance-detail", args=[instance_to_delete.pk])
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+        # Verify database change - instance should be deleted
+        self.assertFalse(PatternInstance.objects.filter(pk=instance_to_delete.pk).exists())
+
+    def test_pattern_instance_create_view_with_invalid_pattern(self):
+        url = reverse("patterninstance-list")
+        data = {"organization_id": 999, "credentials": {"user": "test"}, "pattern": 99999}  # Non-existent pattern ID
+
+        response = self.client.post(url, data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
 
 class AutomationViewSetTest(SharedDataMixin, APITestCase):
@@ -206,6 +307,13 @@ class AutomationViewSetTest(SharedDataMixin, APITestCase):
 
         # Verify database change - automation should be deleted
         self.assertFalse(Automation.objects.filter(pk=automation_to_delete.pk).exists())
+
+    def test_automation_create_view_with_invalid_pattern_instance(self):
+        url = reverse("automation-list")
+        data = {"automation_type": "job_template", "automation_id": 1234, "pattern_instance": 99999}  # Non-existent pattern instance ID
+
+        response = self.client.post(url, data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
 
 class TaskViewSetTest(SharedDataMixin, APITestCase):
