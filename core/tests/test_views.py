@@ -84,6 +84,13 @@ class PatternViewSetTest(SharedDataMixin, APITestCase):
         self.assertEqual(task.details.get("model"), "Pattern")
         self.assertEqual(task.details.get("id"), pattern.id)
 
+    def test_pattern_create_view_with_invalid_data(self):
+        url = reverse("pattern-list")
+        data = {"collection_name": "", "collection_version": "1.0.0", "pattern_name": "test_pattern"}  # Invalid: empty string
+
+        response = self.client.post(url, data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
 
 class ControllerLabelViewSetTest(SharedDataMixin, APITestCase):
     def test_label_list_view(self):
@@ -99,6 +106,40 @@ class ControllerLabelViewSetTest(SharedDataMixin, APITestCase):
         self.assertIn('id', response.data)
         self.assertIn('label_id', response.data)
         self.assertEqual(response.data['label_id'], 5)
+
+    def test_label_create_view(self):
+        url = reverse("controllerlabel-list")
+        data = {"label_id": 10}
+
+        response = self.client.post(url, data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        # Verify database change
+        label = ControllerLabel.objects.get(label_id=10)
+        self.assertIsNotNone(label)
+        self.assertEqual(label.label_id, 10)
+
+    def test_label_update_view(self):
+        url = reverse("controllerlabel-detail", args=[self.label.id])
+        data = {"label_id": 15}  # Updated label_id
+
+        response = self.client.put(url, data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Verify database change
+        self.label.refresh_from_db()
+        self.assertEqual(self.label.label_id, 15)
+
+    def test_label_delete_view(self):
+        # Create a separate label for deletion
+        label_to_delete = ControllerLabel.objects.create(label_id=99)
+
+        url = reverse("controllerlabel-detail", args=[label_to_delete.id])
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+        # Verify database change - label should be deleted
+        self.assertFalse(ControllerLabel.objects.filter(pk=label_to_delete.pk).exists())
 
 
 class PatternInstanceViewSetTest(SharedDataMixin, APITestCase):
@@ -128,3 +169,79 @@ class AutomationViewSetTest(SharedDataMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["automation_type"], "job_template")
 
+    def test_automation_create_view(self):
+        url = reverse("automation-list")
+        data = {"automation_type": "job_template", "automation_id": 1234, "primary": False, "pattern_instance": self.pattern_instance.id}
+
+        response = self.client.post(url, data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        # Verify database change
+        automation = Automation.objects.get(automation_id=1234)
+        self.assertIsNotNone(automation)
+        self.assertEqual(automation.automation_type, "job_template")
+        self.assertFalse(automation.primary)
+
+    def test_automation_update_view(self):
+        url = reverse("automation-detail", args=[self.automation.pk])
+        data = {"automation_type": "job_template", "automation_id": 9999, "primary": False, "pattern_instance": self.pattern_instance.id}  # Updated  # Updated
+
+        response = self.client.put(url, data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Verify database change
+        self.automation.refresh_from_db()
+        self.assertEqual(self.automation.automation_id, 9999)
+        self.assertFalse(self.automation.primary)
+
+    def test_automation_delete_view(self):
+        # Create a separate automation for deletion
+        automation_to_delete = Automation.objects.create(
+            automation_type="job_template", automation_id=5555, primary=False, pattern_instance=self.pattern_instance
+        )
+
+        url = reverse("automation-detail", args=[automation_to_delete.pk])
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+        # Verify database change - automation should be deleted
+        self.assertFalse(Automation.objects.filter(pk=automation_to_delete.pk).exists())
+
+
+class TaskViewSetTest(SharedDataMixin, APITestCase):
+    def test_task_list_view(self):
+        url = reverse("task-list")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 3)
+
+    def test_task_detail_view(self):
+        url = reverse("task-detail", args=[self.task1.pk])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn('id', response.data)
+        self.assertIn('status', response.data)
+        self.assertIn('details', response.data)
+
+    def test_task_list_view_returns_all_tasks(self):
+        url = reverse("task-list")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # Verify we get all created tasks
+        task_ids = [task['id'] for task in response.data]
+        expected_ids = [self.task1.id, self.task2.id, self.task3.id]
+        self.assertEqual(sorted(task_ids), sorted(expected_ids))
+
+    def test_task_detail_view_for_different_statuses(self):
+        tasks_to_test = [(self.task1, "Running"), (self.task2, "Completed"), (self.task3, "Failed")]
+
+        for task, expected_status in tasks_to_test:
+            with self.subTest(status=expected_status):
+                url = reverse("task-detail", args=[task.pk])
+                response = self.client.get(url)
+                self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_task_detail_view_nonexistent_task(self):
+        url = reverse("task-detail", args=[99999])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
