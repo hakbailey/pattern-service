@@ -16,7 +16,6 @@ pre-commit-user
 /.eggs
 .python-version
 
-
 # Testing
 .cache
 .coverage
@@ -49,3 +48,22 @@ tower-backup-*
 
 # DB
 db.sqlite3
+*.db
+
+# Environment variables
+.env
+.env.*
+*.env
+
+# Linting
+.mypy_cache/
+
+# Logs and temporary files
+*.log
+tmp/
+temp/
+
+# Virtual environments
+.venv/
+venv/
+env/
