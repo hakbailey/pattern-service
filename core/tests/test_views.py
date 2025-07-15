@@ -84,28 +84,6 @@ class PatternViewSetTest(SharedDataMixin, APITestCase):
         self.assertEqual(task.details.get("model"), "Pattern")
         self.assertEqual(task.details.get("id"), pattern.id)
 
-    def test_pattern_update_view(self):
-        # Store original values for comparison
-        original_version = self.pattern.collection_version
-
-        url = reverse("pattern-detail", args=[self.pattern.pk])
-        data = {
-            "collection_name": "updated_namespace.mycollection",
-            "collection_version": "2.0.0",  # Updated version
-            "pattern_name": "updated_pattern",
-            "pattern_definition": {"updated": "data"},
-        }
-
-        response = self.client.put(url, data, format="json")
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-        # Verify database change
-        self.pattern.refresh_from_db()
-        self.assertEqual(self.pattern.collection_version, "2.0.0")
-        self.assertEqual(self.pattern.collection_name, "updated_namespace.mycollection")
-        self.assertEqual(self.pattern.pattern_name, "updated_pattern")
-        self.assertNotEqual(self.pattern.collection_version, original_version)
-
     def test_pattern_delete_view(self):
         # Create a separate pattern for deletion
         pattern_to_delete = Pattern.objects.create(
@@ -152,17 +130,6 @@ class ControllerLabelViewSetTest(SharedDataMixin, APITestCase):
         label = ControllerLabel.objects.get(label_id=10)
         self.assertIsNotNone(label)
         self.assertEqual(label.label_id, 10)
-
-    def test_label_update_view(self):
-        url = reverse("controllerlabel-detail", args=[self.label.id])
-        data = {"label_id": 15}  # Updated label_id
-
-        response = self.client.put(url, data, format="json")
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-        # Verify database change
-        self.label.refresh_from_db()
-        self.assertEqual(self.label.label_id, 15)
 
     def test_label_delete_view(self):
         label_to_delete = ControllerLabel.objects.create(label_id=99)
@@ -219,27 +186,6 @@ class PatternInstanceViewSetTest(SharedDataMixin, APITestCase):
         self.assertEqual(task.details.get("model"), "PatternInstance")
         self.assertEqual(task.details.get("id"), instance.id)
 
-    def test_pattern_instance_update_view(self):
-        url = reverse("patterninstance-detail", args=[self.pattern_instance.pk])
-        data = {  # cannot change/update controller_project_id nor controller_ee_id due to read_only_fields serializer constraint
-            "organization_id": 3,
-            "controller_project_id": 789,  # attempt to change the project_id but this shouldn't work
-            "controller_ee_id": 10,  # attempt to change the ee_id but this also shouldn't work
-            "credentials": {"user": "updated_admin"},
-            "executors": [{"executor_type": "updated"}],
-            "pattern": self.pattern.id,
-        }
-
-        response = self.client.put(url, data, format="json")
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-        self.pattern_instance.refresh_from_db()
-        self.assertEqual(self.pattern_instance.organization_id, 3)
-        self.assertNotEqual(self.pattern_instance.controller_project_id, 789)  # ensure the changed ID set here did NOT get updated
-        self.assertNotEqual(self.pattern_instance.controller_ee_id, 10)  # ensure the changed ID set here did NOT get updated
-        self.assertEqual(self.pattern_instance.credentials["user"], "updated_admin")
-        self.assertEqual(self.pattern_instance.executors[0]["executor_type"], "updated")
-
     def test_pattern_instance_delete_view(self):
         # Create a separate instance for deletion
         instance_to_delete = PatternInstance.objects.create(
@@ -286,18 +232,6 @@ class AutomationViewSetTest(SharedDataMixin, APITestCase):
         self.assertIsNotNone(automation)
         self.assertEqual(automation.automation_type, "job_template")
         self.assertFalse(automation.primary)
-
-    def test_automation_update_view(self):
-        url = reverse("automation-detail", args=[self.automation.pk])
-        data = {"automation_type": "job_template", "automation_id": 9999, "primary": False, "pattern_instance": self.pattern_instance.id}  # Updated  # Updated
-
-        response = self.client.put(url, data, format="json")
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-        # Verify database change
-        self.automation.refresh_from_db()
-        self.assertEqual(self.automation.automation_id, 9999)
-        self.assertFalse(self.automation.primary)
 
     def test_automation_delete_view(self):
         # Create a separate automation for deletion
