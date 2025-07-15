@@ -221,8 +221,10 @@ class PatternInstanceViewSetTest(SharedDataMixin, APITestCase):
 
     def test_pattern_instance_update_view(self):
         url = reverse("patterninstance-detail", args=[self.pattern_instance.pk])
-        data = {  # Cannot change/update controller_project_id nor controller_ee_id due to read_only_fields serializer constraint
+        data = {  # cannot change/update controller_project_id nor controller_ee_id due to read_only_fields serializer constraint
             "organization_id": 3,
+            "controller_project_id": 789,  # attempt to change the project_id but this shouldn't work
+            "controller_ee_id": 10,  # attempt to change the ee_id but this also shouldn't work
             "credentials": {"user": "updated_admin"},
             "executors": [{"executor_type": "updated"}],
             "pattern": self.pattern.id,
@@ -233,6 +235,8 @@ class PatternInstanceViewSetTest(SharedDataMixin, APITestCase):
 
         self.pattern_instance.refresh_from_db()
         self.assertEqual(self.pattern_instance.organization_id, 3)
+        self.assertNotEqual(self.pattern_instance.controller_project_id, 789)  # ensure the changed ID set here did NOT get updated
+        self.assertNotEqual(self.pattern_instance.controller_ee_id, 10)  # ensure the changed ID set here did NOT get updated
         self.assertEqual(self.pattern_instance.credentials["user"], "updated_admin")
         self.assertEqual(self.pattern_instance.executors[0]["executor_type"], "updated")
 
