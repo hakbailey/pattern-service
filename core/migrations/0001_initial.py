@@ -16,150 +16,250 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Automation',
+            name="Automation",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('modified', models.DateTimeField(auto_now=True, help_text='The date/time this resource was created.')),
-                ('created', models.DateTimeField(auto_now_add=True, help_text='The date/time this resource was created.')),
-                ('automation_type', models.CharField(choices=[('job_template', 'Job template')], max_length=200)),
-                ('automation_id', models.BigIntegerField()),
-                ('primary', models.BooleanField(default=False)),
-            ],
-            options={
-                'ordering': ['id'],
-            },
-        ),
-        migrations.CreateModel(
-            name='ControllerLabel',
-            fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('modified', models.DateTimeField(auto_now=True, help_text='The date/time this resource was created.')),
-                ('created', models.DateTimeField(auto_now_add=True, help_text='The date/time this resource was created.')),
-                ('label_id', models.BigIntegerField(unique=True)),
-            ],
-            options={
-                'ordering': ['id'],
-            },
-        ),
-        migrations.CreateModel(
-            name='Pattern',
-            fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('collection_name', models.CharField(max_length=200)),
-                ('collection_version', models.CharField(max_length=50)),
-                ('collection_version_uri', models.CharField(blank=True, max_length=200)),
-                ('pattern_name', models.CharField(max_length=200)),
-                ('pattern_definition', models.JSONField(blank=True)),
-            ],
-            options={
-                'ordering': ['id'],
-            },
-        ),
-        migrations.CreateModel(
-            name='PatternInstance',
-            fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('modified', models.DateTimeField(auto_now=True, help_text='The date/time this resource was created.')),
-                ('created', models.DateTimeField(auto_now_add=True, help_text='The date/time this resource was created.')),
-                ('organization_id', models.BigIntegerField()),
-                ('controller_project_id', models.BigIntegerField(blank=True)),
-                ('controller_ee_id', models.BigIntegerField(blank=True, null=True)),
-                ('credentials', models.JSONField()),
-                ('executors', models.JSONField(blank=True, null=True)),
-                ('controller_labels', models.ManyToManyField(blank=True, related_name='pattern_instances', to='core.controllerlabel')),
                 (
-                    'created_by',
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "modified",
+                    models.DateTimeField(
+                        auto_now=True,
+                        help_text="The date/time this resource was created.",
+                    ),
+                ),
+                (
+                    "created",
+                    models.DateTimeField(
+                        auto_now_add=True,
+                        help_text="The date/time this resource was created.",
+                    ),
+                ),
+                (
+                    "automation_type",
+                    models.CharField(
+                        choices=[("job_template", "Job template")], max_length=200
+                    ),
+                ),
+                ("automation_id", models.BigIntegerField()),
+                ("primary", models.BooleanField(default=False)),
+            ],
+            options={
+                "ordering": ["id"],
+            },
+        ),
+        migrations.CreateModel(
+            name="ControllerLabel",
+            fields=[
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "modified",
+                    models.DateTimeField(
+                        auto_now=True,
+                        help_text="The date/time this resource was created.",
+                    ),
+                ),
+                (
+                    "created",
+                    models.DateTimeField(
+                        auto_now_add=True,
+                        help_text="The date/time this resource was created.",
+                    ),
+                ),
+                ("label_id", models.BigIntegerField(unique=True)),
+            ],
+            options={
+                "ordering": ["id"],
+            },
+        ),
+        migrations.CreateModel(
+            name="Pattern",
+            fields=[
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("collection_name", models.CharField(max_length=200)),
+                ("collection_version", models.CharField(max_length=50)),
+                (
+                    "collection_version_uri",
+                    models.CharField(blank=True, max_length=200),
+                ),
+                ("pattern_name", models.CharField(max_length=200)),
+                ("pattern_definition", models.JSONField(blank=True)),
+            ],
+            options={
+                "ordering": ["id"],
+            },
+        ),
+        migrations.CreateModel(
+            name="PatternInstance",
+            fields=[
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "modified",
+                    models.DateTimeField(
+                        auto_now=True,
+                        help_text="The date/time this resource was created.",
+                    ),
+                ),
+                (
+                    "created",
+                    models.DateTimeField(
+                        auto_now_add=True,
+                        help_text="The date/time this resource was created.",
+                    ),
+                ),
+                ("organization_id", models.BigIntegerField()),
+                ("controller_project_id", models.BigIntegerField(blank=True)),
+                ("controller_ee_id", models.BigIntegerField(blank=True, null=True)),
+                ("credentials", models.JSONField()),
+                ("executors", models.JSONField(blank=True, null=True)),
+                (
+                    "controller_labels",
+                    models.ManyToManyField(
+                        blank=True,
+                        related_name="pattern_instances",
+                        to="core.controllerlabel",
+                    ),
+                ),
+                (
+                    "created_by",
                     models.ForeignKey(
                         default=None,
                         editable=False,
-                        help_text='The user who created this resource.',
+                        help_text="The user who created this resource.",
                         null=True,
                         on_delete=django.db.models.deletion.SET_NULL,
-                        related_name='%(app_label)s_%(class)s_created+',
+                        related_name="%(app_label)s_%(class)s_created+",
                         to=settings.AUTH_USER_MODEL,
                     ),
                 ),
                 (
-                    'modified_by',
+                    "modified_by",
                     models.ForeignKey(
                         default=None,
                         editable=False,
-                        help_text='The user who last modified this resource.',
+                        help_text="The user who last modified this resource.",
                         null=True,
                         on_delete=django.db.models.deletion.SET_NULL,
-                        related_name='%(app_label)s_%(class)s_modified+',
+                        related_name="%(app_label)s_%(class)s_modified+",
                         to=settings.AUTH_USER_MODEL,
                     ),
                 ),
-                ('pattern', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='pattern_instances', to='core.pattern')),
+                (
+                    "pattern",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="pattern_instances",
+                        to="core.pattern",
+                    ),
+                ),
             ],
             options={
-                'ordering': ['id'],
+                "ordering": ["id"],
             },
         ),
         migrations.AddConstraint(
-            model_name='pattern',
-            constraint=models.UniqueConstraint(fields=('collection_name', 'collection_version', 'pattern_name'), name='unique_pattern_collection_version'),
+            model_name="pattern",
+            constraint=models.UniqueConstraint(
+                fields=("collection_name", "collection_version", "pattern_name"),
+                name="unique_pattern_collection_version",
+            ),
         ),
         migrations.AddField(
-            model_name='controllerlabel',
-            name='created_by',
+            model_name="controllerlabel",
+            name="created_by",
             field=models.ForeignKey(
                 default=None,
                 editable=False,
-                help_text='The user who created this resource.',
+                help_text="The user who created this resource.",
                 null=True,
                 on_delete=django.db.models.deletion.SET_NULL,
-                related_name='%(app_label)s_%(class)s_created+',
+                related_name="%(app_label)s_%(class)s_created+",
                 to=settings.AUTH_USER_MODEL,
             ),
         ),
         migrations.AddField(
-            model_name='controllerlabel',
-            name='modified_by',
+            model_name="controllerlabel",
+            name="modified_by",
             field=models.ForeignKey(
                 default=None,
                 editable=False,
-                help_text='The user who last modified this resource.',
+                help_text="The user who last modified this resource.",
                 null=True,
                 on_delete=django.db.models.deletion.SET_NULL,
-                related_name='%(app_label)s_%(class)s_modified+',
+                related_name="%(app_label)s_%(class)s_modified+",
                 to=settings.AUTH_USER_MODEL,
             ),
         ),
         migrations.AddField(
-            model_name='automation',
-            name='created_by',
+            model_name="automation",
+            name="created_by",
             field=models.ForeignKey(
                 default=None,
                 editable=False,
-                help_text='The user who created this resource.',
+                help_text="The user who created this resource.",
                 null=True,
                 on_delete=django.db.models.deletion.SET_NULL,
-                related_name='%(app_label)s_%(class)s_created+',
+                related_name="%(app_label)s_%(class)s_created+",
                 to=settings.AUTH_USER_MODEL,
             ),
         ),
         migrations.AddField(
-            model_name='automation',
-            name='modified_by',
+            model_name="automation",
+            name="modified_by",
             field=models.ForeignKey(
                 default=None,
                 editable=False,
-                help_text='The user who last modified this resource.',
+                help_text="The user who last modified this resource.",
                 null=True,
                 on_delete=django.db.models.deletion.SET_NULL,
-                related_name='%(app_label)s_%(class)s_modified+',
+                related_name="%(app_label)s_%(class)s_modified+",
                 to=settings.AUTH_USER_MODEL,
             ),
         ),
         migrations.AddField(
-            model_name='automation',
-            name='pattern_instance',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='automations', to='core.patterninstance'),
+            model_name="automation",
+            name="pattern_instance",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="automations",
+                to="core.patterninstance",
+            ),
         ),
         migrations.AddConstraint(
-            model_name='patterninstance',
-            constraint=models.UniqueConstraint(fields=('organization_id', 'pattern'), name='unique_pattern_instance_organization'),
+            model_name="patterninstance",
+            constraint=models.UniqueConstraint(
+                fields=("organization_id", "pattern"),
+                name="unique_pattern_instance_organization",
+            ),
         ),
     ]
