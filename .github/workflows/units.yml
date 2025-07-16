@@ -37,4 +37,3 @@ jobs:
 
       - name: Run core tests
         run: python manage.py test core
-
