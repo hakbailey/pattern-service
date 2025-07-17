@@ -20,6 +20,7 @@ repos:
       - id: detect-private-key
       - id: end-of-file-fixer
       - id: pretty-format-json
+        args: [--indent=4, --no-sort-keys]
       - id: trailing-whitespace
 
   - repo: https://github.com/psf/black
