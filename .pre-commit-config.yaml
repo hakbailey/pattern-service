@@ -17,13 +17,6 @@ repos:
       - id: check-yaml
       - id: debug-statements
       - id: detect-private-key
-        exclude:
-          (?x)^(
-            manifests/base/apps/.*|
-            manifests/overlays/.*|
-            manifests/base/addons/ansible-saas/postgres/k8s/postgresql\.conf\.cm\.yaml|
-            manifests/base/addons/ansible-saas/management-service/saas-entitlement-service\.yaml
-          )$
       - id: end-of-file-fixer
       - id: trailing-whitespace
 
