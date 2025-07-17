@@ -14,16 +14,13 @@ repos:
       - id: check-added-large-files
       - id: check-json
       - id: check-merge-conflict
+      - id: check-toml
       - id: check-yaml
       - id: debug-statements
       - id: detect-private-key
       - id: end-of-file-fixer
+      - id: pretty-format-json
       - id: trailing-whitespace
-
-  - repo: https://github.com/ansible/ansible-lint
-    rev: v25.6.1
-    hooks:
-      - id: ansible-lint
 
   - repo: https://github.com/psf/black
     rev: 25.1.0
