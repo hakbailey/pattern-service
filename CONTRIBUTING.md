@@ -18,6 +18,7 @@ Hi there! We're excited to have you as a contributor.
 - Take care to make sure no merge commits are in the submission, and use `git rebase` vs `git merge` for this reason.
 - If collaborating with someone else on the same branch, consider using `--force-with-lease` instead of `--force`. This will prevent you from accidentally overwriting commits pushed by someone else. For more information, see [git push docs](https://git-scm.com/docs/git-push#git-push---force-with-leaseltrefnamegt).
 - We ask all of our community members and contributors to adhere to the [Ansible code of conduct](http://docs.ansible.com/ansible/latest/community/code_of_conduct.html). If you have questions, or need assistance, please reach out to our community team at [codeofconduct@ansible.com](mailto:codeofconduct@ansible.com)
+- This repository uses a`pre-commit`, configuration, so ensure that you install pre-commit globally for your user, or by using pipx.
 
 ### Build and Run the Development Environment
 
