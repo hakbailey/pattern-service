@@ -10,7 +10,7 @@ version: dev
 
 This document describes the technical specification for an Ansible pattern, an extension of collections, which are the standard method for packaging and distributing Ansible content. Patterns are used by Ansible Automation Platform (AAP) to offer users the ability to start automating with minimal setup, enhancing productivity and efficiency.
 
-A pattern defines an Ansible automation, such as a playbook, and the resources needed in AAP to run that automation, such as a project, execution environment, job template, and survey. The pattern definition can be consumed by the AAP API to create and configure those resources, allowing pattern catalogs to provide users with a seamless journey from identifying relevant patterns to using them in AAP. 
+A pattern defines an Ansible automation, such as a playbook, and the resources needed in AAP to run that automation, such as a project, execution environment, job template, and survey. The pattern definition can be consumed by the AAP API to create and configure those resources, allowing pattern catalogs to provide users with a seamless journey from identifying relevant patterns to using them in AAP.
 
 Patterns are delivered as files within an Ansible collection. This approach ensures consistent integration with the Ansible ecosystem by leveraging the existing collection framework. These patterns are bundled during collection packaging, enabling them to be searchable, downloadable, and publishable alongside roles, modules, and plugins.
 
@@ -51,11 +51,11 @@ The README file is the human-readable documentation for the pattern. It provides
 
 ### `playbooks/`
 
-Pattern playbook files are included in the `/extensions/patterns/<pattern_name>/playbooks/` directory. 
+Pattern playbook files are included in the `/extensions/patterns/<pattern_name>/playbooks/` directory.
 
 - A pattern **MUST** contain a `playbooks/` directory.
 - The `playbooks/` directory **MUST** contain at least one playbook associated with a job template definition in the pattern's `meta/pattern.json` file.
-- A pattern **MAY** contain multiple playbooks. 
+- A pattern **MAY** contain multiple playbooks.
 - If a pattern contains multiple playbooks, it **MUST** define a primary playbook in its `meta/pattern.json` file.
 
 #### Playbook Requirements
@@ -73,7 +73,7 @@ Templates for various types of catalog software in which patterns may be publish
 - The `templates/` directory **MAY** contain one or more catalog template files.
 
 
-## Validation 
+## Validation
 
 Pattern developers can use [ansible-lint](https://github.com/ansible/ansible-lint) to verify the structure of a pattern and its JSON against the pattern schema.
 
