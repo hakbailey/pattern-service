@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -57,6 +58,19 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "pattern_service.wsgi.application"
+
+
+# Database
+# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.getenv("SQLITE_PATH", BASE_DIR / "pattern_service" / "db.sqlite3"),
+    }
+}
 
 
 # Password validation
@@ -133,3 +147,13 @@ DISPATCHER_CONFIG = {
     },
     "publish": {"default_control_broker": "socket", "default_broker": "pg_notify"},
 }
+
+# Base URL of your AAP service
+URL = "http://localhost:44926"  # or your default URL
+
+# Whether to verify SSL certificates (True or False)
+VALIDATE_CERTS = False
+
+# Default username and password for authentication
+USERNAME = "admin"
+PASSWORD = "your_default_password_here"
