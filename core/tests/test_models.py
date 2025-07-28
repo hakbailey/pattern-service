@@ -23,20 +23,20 @@ class SharedDataMixin:
 
     def create_pattern_instance(cls, org_id, **kwargs):
         defaults = {
-            'controller_project_id': 10,
-            'controller_ee_id': 20,
-            'credentials': {"user": "admin"},
-            'executors': [],
-            'pattern': cls.pattern,
+            "controller_project_id": 10,
+            "controller_ee_id": 20,
+            "credentials": {"user": "admin"},
+            "executors": [],
+            "pattern": cls.pattern,
         }
         defaults.update(kwargs)
         return PatternInstance.objects.create(organization_id=org_id, **defaults)
 
     def create_automation(cls, pattern_instance, **kwargs):
         defaults = {
-            'automation_type': "job_template",
-            'automation_id': 12345,
-            'primary': False,
+            "automation_type": "job_template",
+            "automation_id": 12345,
+            "primary": False,
         }
         defaults.update(kwargs)
         return Automation.objects.create(pattern_instance=pattern_instance, **defaults)
@@ -44,7 +44,10 @@ class SharedDataMixin:
 
 class PatternModelTestCase(SharedDataMixin, TestCase):
     def test_pattern_unique_info_constraint(self):
-        """Test that patterns with same collection_name, collection_version, and pattern_name cannot be created"""
+        """
+        Test that patterns with same collection_name, collection_version,
+        and pattern_name cannot be created
+        """
         with self.assertRaises(IntegrityError):
             Pattern.objects.create(
                 collection_name="mynamespace.mycollection",
@@ -55,15 +58,30 @@ class PatternModelTestCase(SharedDataMixin, TestCase):
 
     def test_pattern_character_length_limits(self):
         with self.assertRaises(ValidationError):
-            pattern = Pattern(collection_name="a" * 201, collection_version="1.0.0", pattern_name="test_pattern", pattern_definition={})
+            pattern = Pattern(
+                collection_name="a" * 201,
+                collection_version="1.0.0",
+                pattern_name="test_pattern",
+                pattern_definition={},
+            )
             pattern.full_clean()
 
         with self.assertRaises(ValidationError):
-            pattern = Pattern(collection_name="test.collection", collection_version="a" * 51, pattern_name="test_pattern", pattern_definition={})
+            pattern = Pattern(
+                collection_name="test.collection",
+                collection_version="a" * 51,
+                pattern_name="test_pattern",
+                pattern_definition={},
+            )
             pattern.full_clean()
 
         with self.assertRaises(ValidationError):
-            pattern = Pattern(collection_name="test.collection", collection_version="1.0.0", pattern_name="a" * 201, pattern_definition={})
+            pattern = Pattern(
+                collection_name="test.collection",
+                collection_version="1.0.0",
+                pattern_name="a" * 201,
+                pattern_definition={},
+            )
             pattern.full_clean()
 
         with self.assertRaises(ValidationError):
@@ -85,7 +103,9 @@ class PatternControllerLabelModelTestCase(SharedDataMixin, TestCase):
 
 class PatternInstanceModelTestCase(SharedDataMixin, TestCase):
     def test_create_pattern_instance(self):
-        instance = self.create_pattern_instance(org_id=1, executors=[{"type": "podman"}])
+        instance = self.create_pattern_instance(
+            org_id=1, executors=[{"type": "podman"}]
+        )
         instance.controller_labels.add(self.label)
         self.assertEqual(instance.pattern, self.pattern)
         self.assertEqual(instance.organization_id, 1)
@@ -93,7 +113,12 @@ class PatternInstanceModelTestCase(SharedDataMixin, TestCase):
         self.assertIn(self.label, instance.controller_labels.all())
 
     def test_cascade_delete_pattern_to_instances(self):
-        instance = self.create_pattern_instance(org_id=3, controller_project_id=30, controller_ee_id=40, credentials={"token": "xyz"})
+        instance = self.create_pattern_instance(
+            org_id=3,
+            controller_project_id=30,
+            controller_ee_id=40,
+            credentials={"token": "xyz"},
+        )
 
         # Verify instance exists
         self.assertTrue(PatternInstance.objects.filter(id=instance.id).exists())
@@ -105,14 +130,27 @@ class PatternInstanceModelTestCase(SharedDataMixin, TestCase):
         self.assertFalse(PatternInstance.objects.filter(id=instance.id).exists())
 
     def test_pattern_unique_org_id_constraint(self):
-        self.create_pattern_instance(org_id=1, controller_project_id=100, controller_ee_id=200, credentials={"token": "abc"})
+        self.create_pattern_instance(
+            org_id=1,
+            controller_project_id=100,
+            controller_ee_id=200,
+            credentials={"token": "abc"},
+        )
         with self.assertRaises(IntegrityError):
-            self.create_pattern_instance(org_id=1, controller_project_id=101, controller_ee_id=201, credentials={"token": "def"})
+            self.create_pattern_instance(
+                org_id=1,
+                controller_project_id=101,
+                controller_ee_id=201,
+                credentials={"token": "def"},
+            )
 
     def test_pattern_instance_null_fields(self):
         """Test creating pattern instance with null/optional fields"""
         instance = self.create_pattern_instance(
-            org_id=5, controller_project_id=None, controller_ee_id=None, executors=None  # This can be null  # This can be null  # This can be null
+            org_id=5,
+            controller_project_id=None,  # This can be null
+            controller_ee_id=None,  # This can be null
+            executors=None,  # This can be null
         )
 
         self.assertIsNone(instance.controller_project_id)
@@ -132,9 +170,16 @@ class PatternInstanceModelTestCase(SharedDataMixin, TestCase):
 
 class PatternAutomationModelTestCase(SharedDataMixin, TestCase):
     def test_cascade_delete_instance_to_automations(self):
-        instance = self.create_pattern_instance(org_id=4, controller_project_id=50, controller_ee_id=60, credentials={"token": "xyz"})
+        instance = self.create_pattern_instance(
+            org_id=4,
+            controller_project_id=50,
+            controller_ee_id=60,
+            credentials={"token": "xyz"},
+        )
 
-        automation = self.create_automation(pattern_instance=instance, automation_id=99999, primary=True)
+        automation = self.create_automation(
+            pattern_instance=instance, automation_id=99999, primary=True
+        )
 
         # Verify automation exists
         self.assertTrue(Automation.objects.filter(id=automation.id).exists())
@@ -157,7 +202,13 @@ class PatternAutomationModelTestCase(SharedDataMixin, TestCase):
             automation.full_clean()
 
     def test_create_automation(self):
-        instance = self.create_pattern_instance(org_id=2, controller_project_id=99, controller_ee_id=98, credentials={}, executors=[])
+        instance = self.create_pattern_instance(
+            org_id=2,
+            controller_project_id=99,
+            controller_ee_id=98,
+            credentials={},
+            executors=[],
+        )
         automation = self.create_automation(pattern_instance=instance, primary=True)
         self.assertEqual(automation.automation_type, "job_template")
         self.assertTrue(automation.primary)
@@ -195,7 +246,9 @@ class PatternTaskModelTestCase(SharedDataMixin, TestCase):
         """Test all valid status choices for Task; covers both with and without details"""
         valid_statuses = ["Initiated", "Running", "Completed", "Failed"]
         for status in valid_statuses:
-            task_with_details = Task.objects.create(status=status, details={"test": "data"})
+            task_with_details = Task.objects.create(
+                status=status, details={"test": "data"}
+            )
             self.assertEqual(task_with_details.status, status)
             task_with_details.delete()
 

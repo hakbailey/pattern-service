@@ -40,7 +40,9 @@ class SharedDataMixin:
         )
 
         cls.task1 = Task.objects.create(status="Running", details={"progress": "50%"})
-        cls.task2 = Task.objects.create(status="Completed", details={"result": "success"})
+        cls.task2 = Task.objects.create(
+            status="Completed", details={"result": "success"}
+        )
         cls.task3 = Task.objects.create(status="Failed", details={"error": "timeout"})
 
 
@@ -87,7 +89,10 @@ class PatternViewSetTest(SharedDataMixin, APITestCase):
     def test_pattern_delete_view(self):
         # Create a separate pattern for deletion
         pattern_to_delete = Pattern.objects.create(
-            collection_name="delete.test", collection_version="1.0.0", pattern_name="deletable_pattern", pattern_definition={}
+            collection_name="delete.test",
+            collection_version="1.0.0",
+            pattern_name="deletable_pattern",
+            pattern_definition={},
         )
 
         url = reverse("pattern-detail", args=[pattern_to_delete.pk])
@@ -116,9 +121,9 @@ class ControllerLabelViewSetTest(SharedDataMixin, APITestCase):
         url = reverse("controllerlabel-detail", args=[self.label.id])
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertIn('id', response.data)
-        self.assertIn('label_id', response.data)
-        self.assertEqual(response.data['label_id'], 5)
+        self.assertIn("id", response.data)
+        self.assertIn("label_id", response.data)
+        self.assertEqual(response.data["label_id"], 5)
 
     def test_label_create_view(self):
         url = reverse("controllerlabel-list")
@@ -189,7 +194,11 @@ class PatternInstanceViewSetTest(SharedDataMixin, APITestCase):
     def test_pattern_instance_delete_view(self):
         # Create a separate instance for deletion
         instance_to_delete = PatternInstance.objects.create(
-            organization_id=999, controller_project_id=111, controller_ee_id=222, credentials={"user": "deletable"}, pattern=self.pattern
+            organization_id=999,
+            controller_project_id=111,
+            controller_ee_id=222,
+            credentials={"user": "deletable"},
+            pattern=self.pattern,
         )
 
         url = reverse("patterninstance-detail", args=[instance_to_delete.pk])
@@ -197,11 +206,17 @@ class PatternInstanceViewSetTest(SharedDataMixin, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
         # Verify database change - instance should be deleted
-        self.assertFalse(PatternInstance.objects.filter(pk=instance_to_delete.pk).exists())
+        self.assertFalse(
+            PatternInstance.objects.filter(pk=instance_to_delete.pk).exists()
+        )
 
     def test_pattern_instance_create_view_with_invalid_pattern(self):
         url = reverse("patterninstance-list")
-        data = {"organization_id": 999, "credentials": {"user": "test"}, "pattern": 99999}  # Non-existent pattern ID
+        data = {
+            "organization_id": 999,
+            "credentials": {"user": "test"},
+            "pattern": 99999,
+        }  # Non-existent pattern ID
 
         response = self.client.post(url, data, format="json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -222,7 +237,12 @@ class AutomationViewSetTest(SharedDataMixin, APITestCase):
 
     def test_automation_create_view(self):
         url = reverse("automation-list")
-        data = {"automation_type": "job_template", "automation_id": 1234, "primary": False, "pattern_instance": self.pattern_instance.id}
+        data = {
+            "automation_type": "job_template",
+            "automation_id": 1234,
+            "primary": False,
+            "pattern_instance": self.pattern_instance.id,
+        }
 
         response = self.client.post(url, data, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -236,7 +256,10 @@ class AutomationViewSetTest(SharedDataMixin, APITestCase):
     def test_automation_delete_view(self):
         # Create a separate automation for deletion
         automation_to_delete = Automation.objects.create(
-            automation_type="job_template", automation_id=5555, primary=False, pattern_instance=self.pattern_instance
+            automation_type="job_template",
+            automation_id=5555,
+            primary=False,
+            pattern_instance=self.pattern_instance,
         )
 
         url = reverse("automation-detail", args=[automation_to_delete.pk])
@@ -248,7 +271,11 @@ class AutomationViewSetTest(SharedDataMixin, APITestCase):
 
     def test_automation_create_view_with_invalid_pattern_instance(self):
         url = reverse("automation-list")
-        data = {"automation_type": "job_template", "automation_id": 1234, "pattern_instance": 99999}  # Non-existent pattern instance ID
+        data = {
+            "automation_type": "job_template",
+            "automation_id": 1234,
+            "pattern_instance": 99999,
+        }  # Non-existent pattern instance ID
 
         response = self.client.post(url, data, format="json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -265,21 +292,25 @@ class TaskViewSetTest(SharedDataMixin, APITestCase):
         url = reverse("task-detail", args=[self.task1.pk])
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertIn('id', response.data)
-        self.assertIn('status', response.data)
-        self.assertIn('details', response.data)
+        self.assertIn("id", response.data)
+        self.assertIn("status", response.data)
+        self.assertIn("details", response.data)
 
     def test_task_list_view_returns_all_tasks(self):
         url = reverse("task-list")
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         # Verify we get all created tasks
-        task_ids = [task['id'] for task in response.data]
+        task_ids = [task["id"] for task in response.data]
         expected_ids = [self.task1.id, self.task2.id, self.task3.id]
         self.assertEqual(sorted(task_ids), sorted(expected_ids))
 
     def test_task_detail_view_for_different_statuses(self):
-        tasks_to_test = [(self.task1, "Running"), (self.task2, "Completed"), (self.task3, "Failed")]
+        tasks_to_test = [
+            (self.task1, "Running"),
+            (self.task2, "Completed"),
+            (self.task3, "Failed"),
+        ]
 
         for task, expected_status in tasks_to_test:
             with self.subTest(status=expected_status):
