@@ -14,7 +14,9 @@ help: ## Show this help message
 CONTAINER_RUNTIME ?= podman
 IMAGE_NAME ?= pattern-service
 IMAGE_TAG ?= latest
-QUAY_NAMESPACE ?= ansible
+
+ensure-namespace:
+	@test -n "$$QUAY_NAMESPACE" || (echo "Error: QUAY_NAMESPACE is required to push quay.io" && exit 1)
 
 .PHONY: build
 build: ## Build the container image

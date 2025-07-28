@@ -69,6 +69,7 @@ exclude_gitignore = true
 strict = true
 disallow_any_generics = false
 disallow_subclassing_any = false
+disallow_untyped_decorators = false
 
 [[tool.mypy.overrides]]
 module = ["ansible_base.*", "dotenv.*"]

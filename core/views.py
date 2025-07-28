@@ -38,7 +38,9 @@ class PatternViewSet(CoreViewSet, ModelViewSet):
         return Response(
             {
                 "task_id": task.id,
-                "message": "Pattern creation initiated. Check task status for progress.",
+                "message": (
+                    "Pattern creation initiated. Check task status for progress."
+                ),
             },
             status=status.HTTP_202_ACCEPTED,
         )
