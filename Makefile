@@ -15,7 +15,7 @@ CONTAINER_RUNTIME ?= podman
 IMAGE_NAME ?= pattern-service
 IMAGE_TAG ?= latest
 QUAY_NAMESPACE ?= ansible
-BUILD_ARGS ?= "--arch amd64"
+BUILD_ARGS ?= --arch amd64
 
 ensure-namespace:
 	@test -n "$$QUAY_NAMESPACE" || (echo "Error: QUAY_NAMESPACE is required to push quay.io" && exit 1)
@@ -23,7 +23,7 @@ ensure-namespace:
 .PHONY: build
 build: ## Build the container image
 	@echo "Building container image..."
-	$(CONTAINER_RUNTIME) build -t $(IMAGE_NAME):$(IMAGE_TAG) -f tools/docker/Dockerfile.dev $(BUILD_ARGS) .
+	$(CONTAINER_RUNTIME) build -t $(IMAGE_NAME):$(IMAGE_TAG) -f tools/podman/Containerfile.dev $(BUILD_ARGS) .
 
 .PHONY: clean
 clean: ## Remove container image
@@ -40,25 +40,19 @@ push: ensure-namespace build ## Tag and push container image to Quay.io
 # Compose
 # -------------------------------------
 .PHONY: compose-build
-compose-build:
-	$(CONTAINER_RUNTIME) compose -f tools/docker/docker-compose.yaml $(COMPOSE_OPTS) build
+compose-build: ## Build the containers images for the services
+	$(CONTAINER_RUNTIME) compose -f tools/podman/compose.yaml $(COMPOSE_OPTS) build
 
-.PHONY: compose-up
+.PHONY: compose-up ## Build and start the containers for the services
 compose-up:
-	$(CONTAINER_RUNTIME) compose -f tools/docker/docker-compose.yaml $(COMPOSE_OPTS) up $(COMPOSE_UP_OPTS) --remove-orphans
+	$(CONTAINER_RUNTIME) compose -f tools/podman/compose.yaml $(COMPOSE_OPTS) up $(COMPOSE_UP_OPTS) --remove-orphans
 
 .PHONY: compose-down
-compose-down:
-	$(CONTAINER_RUNTIME) compose -f tools/docker/docker-compose.yaml $(COMPOSE_OPTS) down --remove-orphans
-
-.PHONY: compose-clean
-compose-clean:
-	$(CONTAINER_RUNTIME) compose -f tools/docker/docker-compose.yaml rm -sf
-	docker rmi --force localhost/ansible-pattern-service-api localhost/ansible-pattern-service-worker
-	docker volume rm -f postgres_data
+compose-down: ## Stop containers and remove containers, network, images and volumes created by compose-up
+	$(CONTAINER_RUNTIME) compose -f tools/podman/compose.yaml $(COMPOSE_OPTS) down --remove-orphans
 
 .PHONY: compose-restart
-compose-restart: compose-down compose-clean compose-up
+compose-restart: compose-down compose-up ## Stop and remove existing infrastructure and start a new one
 
 # -------------------------------------
 # Dependencies

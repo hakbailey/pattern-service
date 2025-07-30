@@ -2,11 +2,11 @@ FROM registry.access.redhat.com/ubi9/ubi:latest
 
 WORKDIR /app
 
-COPY requirements/requirements.txt .
+COPY requirements/requirements-dev.txt .
 
 RUN dnf install python3.11 python3.11-pip -y
 
-RUN python3.11 -m pip install --no-cache-dir -r requirements.txt
+RUN python3.11 -m pip install --no-cache-dir -r requirements-dev.txt
 
 ADD core /app/core
 

@@ -23,17 +23,15 @@ services:
       timeout: 5s
       retries: 3
       start_period: 5s
-    networks:
-      - dev
 
   pattern-service-worker:
-    image: localhost/ansible-pattern-service-worker
+    image: localhost/pattern-service-worker
     environment:
       << : *common-env
       PATTERN_SERVICE_DISPATCHER_NODE_ID: pattern-service-worker
     build:
       context: ../../
-      dockerfile: tools/docker/Dockerfile.dev
+      dockerfile: tools/podman/Containerfile.dev
     command:
       - /bin/bash
       - -c
@@ -42,17 +40,15 @@ services:
       postgres:
         condition: service_healthy
     restart: always
-    networks:
-      - dev
 
   pattern-service-api:
-    image: localhost/ansible-pattern-service-api
+    image: localhost/pattern-service-api
     environment:
       << : *common-env
       PATTERN_SERVICE_DISPATCHER_NODE_ID: pattern-service-api
     build:
       context: ../../
-      dockerfile: tools/docker/Dockerfile.dev
+      dockerfile: tools/podman/Containerfile.dev
     command:
       - /bin/bash
       - -c
@@ -72,13 +68,7 @@ services:
       interval: 30s
       timeout: 5s
       retries: 10
-    networks:
-      - dev
-      - default
 
 volumes:
   postgres_data: {}
 
-networks:
-  dev:
-    name: dev
