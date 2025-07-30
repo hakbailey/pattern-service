@@ -112,14 +112,11 @@ DATABASES = {
 DISPATCHER_CONFIG = {
     "version": 2,
     "service": {
-        "pool_kwargs": {"min_workers": 2, "max_workers": 12, "scaledown_wait": 15},
         "main_kwargs": {"node_id": "pattern-service-a"},
-        "process_manager_cls": "ForkServerManager",
         "process_manager_kwargs": {
             "preload_modules": ["pattern_service.core.tasks.hazmat"]
         },
     },
-    "worker": {"worker_kwargs": {"idle_timeout": 3}},
     "brokers": {
         "pg_notify": {
             "config": {
@@ -131,8 +128,6 @@ DISPATCHER_CONFIG = {
             "sync_connection_factory": "dispatcherd.brokers.pg_notify.connection_saver",
             "channels": ["pattern-service-tasks"],
             "default_publish_channel": "pattern-service-tasks",
-            "max_connection_idle_seconds": 5,
-            "max_self_check_message_age_seconds": 2,
         },
         "socket": {"socket_path": "pattern_service_dispatcher.sock"},
     },
