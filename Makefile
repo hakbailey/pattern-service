@@ -11,7 +11,7 @@ help: ## Show this help message
 # Container image
 # -------------------------------------
 
-CONTAINER_RUNTIME ?= podman
+COMPOSE_COMMAND ?= podman compose
 IMAGE_NAME ?= pattern-service
 IMAGE_TAG ?= latest
 QUAY_NAMESPACE ?= ansible
@@ -41,15 +41,15 @@ push: ensure-namespace build ## Tag and push container image to Quay.io
 # -------------------------------------
 .PHONY: compose-build
 compose-build: ## Build the containers images for the services
-	$(CONTAINER_RUNTIME) compose -f tools/podman/compose.yaml $(COMPOSE_OPTS) build
+	$(COMPOSE_COMMAND) -f tools/podman/compose.yaml $(COMPOSE_OPTS) build
 
 .PHONY: compose-up ## Build and start the containers for the services
 compose-up:
-	$(CONTAINER_RUNTIME) compose -f tools/podman/compose.yaml $(COMPOSE_OPTS) up $(COMPOSE_UP_OPTS) --remove-orphans
+	$(COMPOSE_COMMAND) -f tools/podman/compose.yaml $(COMPOSE_OPTS) up $(COMPOSE_UP_OPTS) --remove-orphans
 
 .PHONY: compose-down
 compose-down: ## Stop containers and remove containers, network, images and volumes created by compose-up
-	$(CONTAINER_RUNTIME) compose -f tools/podman/compose.yaml $(COMPOSE_OPTS) down --remove-orphans
+	$(COMPOSE_COMMAND) -f tools/podman/compose.yaml $(COMPOSE_OPTS) down --remove-orphans
 
 .PHONY: compose-restart
 compose-restart: compose-down compose-up ## Stop and remove existing infrastructure and start a new one
