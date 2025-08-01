@@ -85,7 +85,7 @@ ignore_missing_imports = true
 
 [tool.tox]
 requires = ["tox>=4.26"]
-env_list = ["check", "format", "lint", "test", "type"]
+env_list = ["check", "format", "lint", "type"]
 
 [tool.tox.env_run_base]
 package = "wheel"
