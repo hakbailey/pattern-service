@@ -12,16 +12,11 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-import os
-
 from django.core.exceptions import ImproperlyConfigured
 from dynaconf import Dynaconf
 
 
 def override_dispatcher_settings(loaded_settings: Dynaconf) -> None:
-    if os.environ.get("PATTERN_SERVICE_MODE", "testing") == "testing":
-        # Skip this update while running unit tests
-        return None
     databases = loaded_settings.get("DATABASES", {})
     if databases and "default" not in databases:
         raise ImproperlyConfigured("DATABASES settings must contain a 'default' key")
