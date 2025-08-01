@@ -4,7 +4,6 @@ x-environment: &common-env
   PATTERN_SERVICE_DB_NAME: pattern_db
   PATTERN_SERVICE_DB_USER: pattern
   PATTERN_SERVICE_DB_PASSWORD: pattern123
-  PATTERN_SERVICE_FEATURE_DISPATCHERD: "true"
   PATTERN_SERVICE_MODE: development
 services:
   postgres:

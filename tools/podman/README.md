@@ -9,8 +9,8 @@ Once you have a local copy, run the commands in the following sections from the 
 
 ### Prerequisites
 
-- [Docker](https://docs.docker.com/engine/installation/) on the host where the application will be deployed. After installing Docker, the Docker service must be started (depending on your OS, you may have to add the local user that uses Docker to the `docker` group, refer to the documentation for details)
-- [Docker Compose](https://docs.docker.com/compose/install/).
+- [Podman](https://podman.io/docs/installation) on the host where the application will be deployed.
+- [Podman Compose](https://podman-desktop.io/docs/compose/setting-up-compose) or [python installation](https://pypi.org/project/podman-compose/).
 
 
 ## Starting the Development Environment
@@ -23,9 +23,9 @@ Run the following to build the image:
 $ make compose-build
 ```
 
-The image will need to be rebuilt if there are any changes to `tools/docker/docker-compose.yaml`.
+> The image will need to be rebuilt if there are any changes to `tools/podman/compose.yaml`.
 
-Once the build completes, you will have a few new images in your local image cache. Use the `podman images` command to view them, as follows:
+Once the build completes, you will have a `ansible/awx_devel` image in your local image cache. Use the `podman images` command to view it, as follows:
 
 ```bash
 (host)$ podman images
@@ -46,6 +46,6 @@ Run the pattern-service-api, pattern-service-worker, and postgres containers. Th
 $ make compose-up
 ```
 
-For running docker-compose detached mode, start the containers using the following command: `$ make compose-up COMPOSE_UP_OPTS=-d`
+> For running podman-compose in detached mode, start the containers using the following command: `$ make compose-up COMPOSE_UP_OPTS=-d`
 
 You can test the application from the url `http://localhost:8000/api/pattern-service/v1/test/`
