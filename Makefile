@@ -11,6 +11,7 @@ help: ## Show this help message
 # Container image
 # -------------------------------------
 
+CONTAINER_RUNTIME ?= podman
 COMPOSE_COMMAND ?= podman compose
 IMAGE_NAME ?= pattern-service
 IMAGE_TAG ?= latest
@@ -63,3 +64,13 @@ requirements: ## Generate requirements.txt files from pyproject.toml
 	pip-compile -o requirements/requirements.txt pyproject.toml
 	pip-compile --extra dev --extra test -o requirements/requirements-dev.txt pyproject.toml
 	pip-compile --extra test -o requirements/requirements-test.txt pyproject.toml
+
+# -------------------------------------
+# Test
+# -------------------------------------
+
+.PHONY: test
+test: ## Run tests with a postgres database using docker-compose
+	$(COMPOSE_COMMAND) -f tools/podman/compose-test.yaml $(COMPOSE_OPTS) up -d
+	-tox -e test
+	$(COMPOSE_COMMAND) -f tools/podman/compose-test.yaml $(COMPOSE_OPTS) down
