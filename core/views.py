@@ -40,10 +40,7 @@ class PatternViewSet(CoreViewSet, ModelViewSet):
             status="Initiated", details={"model": "Pattern", "id": pattern.id}
         )
 
-        run_pattern_task(pattern.id, task.id)
-
         headers = self.get_success_headers(serializer.data)
-
         return Response(
             {
                 "task_id": task.id,

@@ -94,3 +94,8 @@ class Task(CommonModel):
 
     status: models.CharField = models.CharField(max_length=20, choices=status_choices)
     details: models.JSONField = models.JSONField(null=True, blank=True)
+
+    def update_task_status(self, status_: str, details: dict) -> None:
+        self.status = status_
+        self.details = details
+        self.save()

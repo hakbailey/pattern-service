@@ -12,7 +12,7 @@ from core.models import ControllerLabel
 from core.models import Pattern
 from core.models import PatternInstance
 from core.models import Task
-from core.services import pattern_task
+from core.tasks import run_pattern_task
 
 
 class SharedDataMixin:
@@ -78,12 +78,9 @@ class SharedDataMixin:
 
 
 class PatternTaskTest(SharedDataMixin, TestCase):
-    @patch(
-        "core.services.update_task_status",
-        wraps=pattern_task.__globals__["update_task_status"],
-    )
-    @patch("core.services.open", new_callable=mock_open, read_data='{"name": "test"}')
-    @patch("core.services.download_collection")
+    @patch("core.models.Task.update_task_status", autospec=True)
+    @patch("core.tasks.open", new_callable=mock_open, read_data='{"name": "test"}')
+    @patch("core.tasks.download_collection")
     def test_run_pattern_task_success(
         self, mock_download, mock_open_fn, mock_update_status
     ):
@@ -112,7 +109,7 @@ class PatternTaskTest(SharedDataMixin, TestCase):
         ) as f:
             f.write(json.dumps({"name": "test"}))
 
-        pattern_task(pattern.id, task.id)
+        run_pattern_task(pattern.id, task.id)
 
         mock_update_status.assert_any_call(
             task, "Running", {"info": "Processing pattern"}
@@ -121,11 +118,8 @@ class PatternTaskTest(SharedDataMixin, TestCase):
             task, "Completed", {"info": "Pattern processed successfully"}
         )
 
-    @patch(
-        "core.services.update_task_status",
-        wraps=pattern_task.__globals__["update_task_status"],
-    )
-    @patch("core.services.download_collection", side_effect=FileNotFoundError)
+    @patch("core.models.Task.update_task_status", autospec=True)
+    @patch("core.tasks.download_collection", side_effect=FileNotFoundError)
     def test_run_pattern_task_file_not_found(self, mock_download, mock_update_status):
         pattern = Pattern.objects.create(
             collection_name="demo.collection",
@@ -134,49 +128,55 @@ class PatternTaskTest(SharedDataMixin, TestCase):
         )
         task = Task.objects.create(status="Initiated", details={})
 
-        pattern_task(pattern.id, task.id)
+        run_pattern_task(pattern.id, task.id)
 
         mock_update_status.assert_called_with(
             task, "Failed", {"error": "Pattern definition not found."}
         )
 
-    @patch(
-        "core.services.download_collection", side_effect=Exception("Download failed")
-    )
+    @patch("core.tasks.download_collection", side_effect=Exception("Download failed"))
     def test_run_pattern_task_handles_download_failure(self, mock_download):
-        pattern_task(self.pattern.id, self.task.id)
+        run_pattern_task(self.pattern.id, self.task.id)
         self.task.refresh_from_db()
         self.assertEqual(self.task.status, "Failed")
         self.assertIn("Download failed", self.task.details.get("error", ""))
 
-    @patch(
-        "core.services.update_task_status",
-        wraps=pattern_task.__globals__["update_task_status"],
-    )
-    @patch("core.services.download_collection")
+    @patch("core.models.Task.update_task_status", autospec=True)
+    @patch("core.tasks.download_collection")
     def test_full_status_update_flow(self, mock_download, mock_update_status):
         temp_dir_path = self.create_temp_collection_dir()
         mock_download.return_value.__enter__.return_value = temp_dir_path
 
-        # Run the task
-        pattern_task(self.pattern.id, self.task.id)
+        def _side_effect(self_task, status_, details):
+            self_task.status = status_
+            self_task.details = details
+            self_task.save()
 
-        # Verify calls to update_task_status
+        mock_update_status.side_effect = _side_effect
+
+        run_pattern_task(self.pattern.id, self.task.id)
+
         expected_calls = [
             (self.task, "Running", {"info": "Processing pattern"}),
             (self.task, "Completed", {"info": "Pattern processed successfully"}),
         ]
-        actual_calls = [tuple(call.args) for call in mock_update_status.call_args_list]
+
+        actual_calls = [
+            (call_args[0][0], call_args[0][1], call_args[0][2])
+            for call_args in mock_update_status.call_args_list
+        ]
+
+        # Assert update_task_status calls
         for expected in expected_calls:
             self.assertIn(expected, actual_calls)
 
-        # Verify final DB state
+        # Assert final DB state
         self.task.refresh_from_db()
         self.assertEqual(self.task.status, "Completed")
         self.assertEqual(
             self.task.details.get("info"), "Pattern processed successfully"
         )
 
-        # Verify pattern_definition was updated and saved
+        # Assert pattern definition was updated
         self.pattern.refresh_from_db()
         self.assertEqual(self.pattern.pattern_definition, {"mock_key": "mock_value"})
