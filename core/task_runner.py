@@ -13,11 +13,20 @@ logger = logging.getLogger(__name__)
 def run_pattern_task(pattern_id: int, task_id: int) -> None:
     """
     Orchestrates downloading a collection and saving a pattern definition.
+
+    Args:
+        pattern_id (int): The ID of the pattern to process.
+        task_id (int): The ID of the task..
+
+    Raises:
+        FileNotFoundError: If the pattern definition is not found.
+        Exception: If any other error occurs.
     """
     task = Task.objects.get(id=task_id)
+    task.mark_initiated({"info": "Processing started"})
     try:
         pattern = Pattern.objects.get(id=pattern_id)
-        task.update_task_status("Running", {"info": "Processing pattern"})
+        task.mark_running({"info": "Processing pattern"})
         with download_collection(
             pattern.collection_name, pattern.collection_version
         ) as collection_path:
@@ -37,10 +46,10 @@ def run_pattern_task(pattern_id: int, task_id: int) -> None:
                 pattern.collection_name, pattern.collection_version
             )
             pattern.save(update_fields=["pattern_definition", "collection_version_uri"])
-        task.update_task_status("Completed", {"info": "Pattern processed successfully"})
+        task.mark_completed({"info": "Pattern processed successfully"})
     except FileNotFoundError:
         logger.error(f"Could not find pattern definition for task {task_id}")
-        task.update_task_status("Failed", {"error": "Pattern definition not found."})
+        task.mark_failed({"error": "Pattern definition not found."})
     except Exception as e:
         logger.error(f"Task {task_id} failed: {e}")
-        task.update_task_status("Failed", {"error": str(e)})
+        task.mark_failed({"error": str(e)})

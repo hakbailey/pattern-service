@@ -133,13 +133,3 @@ DISPATCHER_CONFIG = {
     },
     "publish": {"default_control_broker": "socket", "default_broker": "pg_notify"},
 }
-
-# Base URL of your AAP service
-URL = "http://localhost:44926"  # or your default URL
-
-# Whether to verify SSL certificates (True or False)
-VALIDATE_CERTS = False
-
-# Default username and password for authentication
-USERNAME = "admin"
-PASSWORD = "your_default_password_here"

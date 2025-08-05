@@ -14,7 +14,6 @@ try:
 except ImportError:
     pass
 
-# Ensure default environment mode
 os.environ["PATTERN_SERVICE_MODE"] = os.environ.get(
     "PATTERN_SERVICE_MODE", "production"
 )

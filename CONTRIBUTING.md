@@ -88,26 +88,7 @@ The application can be reached in your browser at `https://localhost:8000/`. The
 
 ### Development Configuration
 
-The application uses dynaconf to manage configuration. Default development settings are defined in `development_defaults.py`. These include:
-
-#### Database
-
-By default, the application uses a local SQLite database:
-
-```bash
-# Default DB path
-default_path = BASE_DIR / "db.sqlite3"
-
-# Use environment variable if set, else default
-env_path = os.getenv("SQLITE_PATH")
-db_path = Path(env_path) if env_path else default_path
-```
-
-You can override the path by setting the `SQLITE_PATH` environment variable.
-
-#### Ansible Automation Platform (AAP) Service Configuration
-
-Default configuration values for connecting to the AAP service are defined in `development_defaults.py`:
+Default configuration values for connecting to the Ansible Automation Platform (AAP) service are defined in `development_defaults.py`:
 
 ```bash
 AAP_URL = "http://localhost:44926"        # Base URL of your AAP instance

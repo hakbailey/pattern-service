@@ -6,7 +6,7 @@
 #
 asgiref==3.8.1
     # via django
-certifi==2025.7.14
+certifi==2025.8.3
     # via requests
 cffi==1.17.1
     # via cryptography
@@ -37,26 +37,15 @@ psycopg==3.2.9
     # via pattern_service (pyproject.toml)
 pycparser==2.22
     # via cffi
-<<<<<<< HEAD
-<<<<<<< HEAD
 pyyaml==6.0.2
     # via dispatcherd
-=======
-requests==2.32.3
-    # via -r requirements/requirements.in
->>>>>>> 39975e1 (Update)
-=======
 requests==2.32.4
     # via pattern_service (pyproject.toml)
->>>>>>> 97a76e7 (Rebase)
 sqlparse==0.5.3
     # via
     #   django
     #   django-ansible-base
-<<<<<<< HEAD
 typing-extensions==4.14.1
     # via psycopg
-=======
 urllib3==2.5.0
     # via requests
->>>>>>> 39975e1 (Update)

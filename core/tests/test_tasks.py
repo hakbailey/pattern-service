@@ -3,7 +3,6 @@ import os
 import shutil
 import tempfile
 from typing import List
-from unittest.mock import mock_open
 from unittest.mock import patch
 
 from django.test import TestCase
@@ -12,7 +11,7 @@ from core.models import ControllerLabel
 from core.models import Pattern
 from core.models import PatternInstance
 from core.models import Task
-from core.tasks import run_pattern_task
+from core.task_runner import run_pattern_task
 
 
 class SharedDataMixin:
@@ -78,81 +77,11 @@ class SharedDataMixin:
 
 
 class PatternTaskTest(SharedDataMixin, TestCase):
-    @patch("core.models.Task.update_task_status", autospec=True)
-    @patch("core.tasks.open", new_callable=mock_open, read_data='{"name": "test"}')
-    @patch("core.tasks.download_collection")
-    def test_run_pattern_task_success(
-        self, mock_download, mock_open_fn, mock_update_status
-    ):
-        pattern = Pattern.objects.create(
-            collection_name="demo.collection",
-            collection_version="1.0.0",
-            pattern_name="test_pattern",
-        )
-        task = Task.objects.create(status="Initiated", details={})
-        temp_dir = tempfile.mkdtemp()
-        mock_download.return_value.__enter__.return_value = temp_dir
-
-        os.makedirs(
-            os.path.join(temp_dir, "extensions", "patterns", "test_pattern", "meta")
-        )
-        with open(
-            os.path.join(
-                temp_dir,
-                "extensions",
-                "patterns",
-                "test_pattern",
-                "meta",
-                "pattern.json",
-            ),
-            "w",
-        ) as f:
-            f.write(json.dumps({"name": "test"}))
-
-        run_pattern_task(pattern.id, task.id)
-
-        mock_update_status.assert_any_call(
-            task, "Running", {"info": "Processing pattern"}
-        )
-        mock_update_status.assert_any_call(
-            task, "Completed", {"info": "Pattern processed successfully"}
-        )
-
-    @patch("core.models.Task.update_task_status", autospec=True)
-    @patch("core.tasks.download_collection", side_effect=FileNotFoundError)
-    def test_run_pattern_task_file_not_found(self, mock_download, mock_update_status):
-        pattern = Pattern.objects.create(
-            collection_name="demo.collection",
-            collection_version="1.0.0",
-            pattern_name="missing_pattern",
-        )
-        task = Task.objects.create(status="Initiated", details={})
-
-        run_pattern_task(pattern.id, task.id)
-
-        mock_update_status.assert_called_with(
-            task, "Failed", {"error": "Pattern definition not found."}
-        )
-
-    @patch("core.tasks.download_collection", side_effect=Exception("Download failed"))
-    def test_run_pattern_task_handles_download_failure(self, mock_download):
-        run_pattern_task(self.pattern.id, self.task.id)
-        self.task.refresh_from_db()
-        self.assertEqual(self.task.status, "Failed")
-        self.assertIn("Download failed", self.task.details.get("error", ""))
-
-    @patch("core.models.Task.update_task_status", autospec=True)
-    @patch("core.tasks.download_collection")
-    def test_full_status_update_flow(self, mock_download, mock_update_status):
+    @patch("core.models.Task.set_status", autospec=True, wraps=Task.set_status)
+    @patch("core.task_runner.download_collection")
+    def test_run_pattern_task_success(self, mock_download, mock_update_status):
         temp_dir_path = self.create_temp_collection_dir()
         mock_download.return_value.__enter__.return_value = temp_dir_path
-
-        def _side_effect(self_task, status_, details):
-            self_task.status = status_
-            self_task.details = details
-            self_task.save()
-
-        mock_update_status.side_effect = _side_effect
 
         run_pattern_task(self.pattern.id, self.task.id)
 
@@ -180,3 +109,28 @@ class PatternTaskTest(SharedDataMixin, TestCase):
         # Assert pattern definition was updated
         self.pattern.refresh_from_db()
         self.assertEqual(self.pattern.pattern_definition, {"mock_key": "mock_value"})
+
+    @patch("core.models.Task.set_status", autospec=True)
+    @patch("core.task_runner.download_collection", side_effect=FileNotFoundError)
+    def test_run_pattern_task_file_not_found(self, mock_download, mock_update_status):
+        pattern = Pattern.objects.create(
+            collection_name="demo.collection",
+            collection_version="1.0.0",
+            pattern_name="missing_pattern",
+        )
+        task = Task.objects.create(status="Initiated", details={})
+
+        run_pattern_task(pattern.id, task.id)
+
+        mock_update_status.assert_called_with(
+            task, "Failed", {"error": "Pattern definition not found."}
+        )
+
+    @patch(
+        "core.task_runner.download_collection", side_effect=Exception("Download failed")
+    )
+    def test_run_pattern_task_handles_download_failure(self, mock_download):
+        run_pattern_task(self.pattern.id, self.task.id)
+        self.task.refresh_from_db()
+        self.assertEqual(self.task.status, "Failed")
+        self.assertIn("Download failed", self.task.details.get("error", ""))

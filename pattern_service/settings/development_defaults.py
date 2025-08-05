@@ -1,4 +1,3 @@
-import os
 from pathlib import Path
 
 ALLOWED_HOSTS = ["localhost", "pattern-service", "127.0.0.1"]
@@ -39,27 +38,6 @@ LOGGING = {
         },
         "dispatcherd": {"handlers": ["console"], "level": "INFO"},
     },
-}
-
-# Database
-# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-
-# Default DB path
-default_path = BASE_DIR / "db.sqlite3"
-
-# Use environment variable if set, else default
-env_path = os.getenv("SQLITE_PATH")
-db_path = Path(env_path) if env_path else default_path
-
-# Ensure DB directory exists
-db_path.parent.mkdir(parents=True, exist_ok=True)
-
-# Database configuration
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": str(db_path),
-    }
 }
 
 # Base URL of your AAP service
