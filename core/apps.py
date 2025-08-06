@@ -14,6 +14,23 @@ class CoreConfig(AppConfig):
     name = "core"
 
     def ready(self) -> None:
+        # List of required AAP variables
+        required_vars = [
+            "AAP_URL",
+            "AAP_USERNAME",
+            "AAP_PASSWORD",
+        ]
+
+        # Check that each required setting is defined
+        missing = [var for var in required_vars if not getattr(settings, var, None)]
+        if missing:
+            logger.error(
+                f"Missing required configuration variables: {', '.join(missing)}"
+            )
+            raise RuntimeError(
+                f"Required AAP variable not defined: {', '.join(missing)}. "
+            )
+
         # Validate AAP_URL
         try:
             settings.AAP_URL = validate_url(settings.AAP_URL)
