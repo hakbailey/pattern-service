@@ -1,5 +1,4 @@
 import os
-from urllib.parse import urlparse
 
 from dynaconf import Dynaconf
 
@@ -16,19 +15,8 @@ _settings = Dynaconf(
     load_dotenv=True,
 )
 
-
-def _validate_url(url: str) -> str:
-    """Ensure the URL has a valid scheme and format."""
-    if not url.startswith(("http://", "https://")):
-        url = f"http://{url}"
-    parsed = urlparse(url)
-    if not parsed.scheme or not parsed.netloc:
-        raise ValueError(f"Invalid URL: {url}")
-    return url.rstrip("/")
-
-
 # Exposed config values
-AAP_URL = _validate_url(_settings.AAP_URL)
+AAP_URL = _settings.AAP_URL
 AAP_VALIDATE_CERTS = _settings.AAP_VALIDATE_CERTS
 AAP_USERNAME = _settings.AAP_USERNAME
 AAP_PASSWORD = _settings.AAP_PASSWORD
