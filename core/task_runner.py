@@ -2,10 +2,11 @@ import json
 import logging
 import os
 
+from core.utils.controller import build_collection_uri
+from core.utils.controller import download_collection
+
 from .models import Pattern
 from .models import Task
-from .utils import build_collection_uri
-from .utils import download_collection
 
 logger = logging.getLogger(__name__)
 

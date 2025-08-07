@@ -1,4 +1,4 @@
-import core.controller_client as cc
+import core.utils.controller.client as cc
 
 
 def test_get_http_session():

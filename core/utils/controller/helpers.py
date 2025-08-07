@@ -6,23 +6,12 @@ import tarfile
 import tempfile
 from typing import Iterator
 from urllib.parse import urljoin
-from urllib.parse import urlparse
 
 from django.conf import settings
 
-from .controller_client import get
+from .client import get
 
 logger = logging.getLogger(__name__)
-
-
-def validate_url(url: str) -> str:
-    """Ensure the URL has a valid scheme and format."""
-    if not url.startswith(("http://", "https://")):
-        url = f"http://{url}"
-    parsed = urlparse(url)
-    if not parsed.scheme or not parsed.netloc:
-        raise ValueError(f"Invalid URL: {url}")
-    return url.rstrip("/")
 
 
 def build_collection_uri(collection: str, version: str) -> str:
