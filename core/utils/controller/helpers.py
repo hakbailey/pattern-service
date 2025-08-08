@@ -38,7 +38,7 @@ def download_collection(collection_name: str, version: str) -> Iterator[str]:
     temporary directory.
 
     Args:
-        collection: The name of the collection (e.g., 'my_namespace.my_collection').
+        collection_name: The name of the collection (e.g., 'my_namespace.my_collection').
         version: The version of the collection (e.g., '1.0.0').
 
     Yields:
