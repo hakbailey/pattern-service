@@ -95,11 +95,8 @@ class Task(CommonModel):
         COMPLETED = "Completed"
         FAILED = "Failed"
 
-    status: models.CharField = models.CharField(
-        max_length=20, choices=Status.choices, default=Status.INITIATED, db_index=True
-    )
+    status: models.CharField = models.CharField(max_length=20, choices=Status.choices)
     details: models.JSONField = models.JSONField(null=True, blank=True)
-    updated_at: models.DateTimeField = models.DateTimeField(auto_now=True)
 
     def set_status(
         self,
@@ -127,7 +124,7 @@ class Task(CommonModel):
         self.status = new_status
         self.details = details or {}
         if save_immediately:
-            self.save(update_fields=["status", "details", "updated_at"])
+            self.save(update_fields=["status", "details"])
 
     def mark_initiated(self, details: Optional[Dict[str, Any]] = None) -> None:
         self.set_status(self.Status.INITIATED, details)
