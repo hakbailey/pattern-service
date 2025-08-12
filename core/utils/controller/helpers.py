@@ -28,6 +28,8 @@ def build_collection_uri(collection: str, version: str) -> str:
     path = "/api/galaxy/v3/plugin/ansible/content/published/collections/artifacts"
     filename = f"{collection}-{version}.tar.gz"
 
+    print("Filename", filename)
+
     return urljoin(f"{settings.AAP_URL}/", f"{path}/{filename}")
 
 
