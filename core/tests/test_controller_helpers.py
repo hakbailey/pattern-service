@@ -65,7 +65,7 @@ def mock_download_failure():
     "collection_name, version, expected_uri",
     [
         (
-            "another-collection",
+            "another.collection",
             "2.0.0",
             (
                 "http://localhost:44926/api/galaxy/v3/plugin/ansible/content/published/"
@@ -77,7 +77,7 @@ def mock_download_failure():
             "0.1.0-beta",
             (
                 "http://localhost:44926/api/galaxy/v3/plugin/ansible/content/published/"
-                "collections/artifacts/edge.case-0.1.0-beta.tar.gz"
+                "collections/artifacts/edge-case-0.1.0-beta.tar.gz"
             ),
         ),
     ],
@@ -99,7 +99,7 @@ def test_download_collection_success(mock_download_success):
 
     collection_name = "my_namespace.my_collection"
     version = "1.0.0"
-    expected_path = os.path.join("/mock/temp/dir", "my_namespace-my_collection-1.0.0")
+    expected_path = os.path.join("/mock/temp/dir", "my_namespace.my_collection-1.0.0")
 
     with download_collection(collection_name, version) as path:
         # Assert that the correct path was yielded

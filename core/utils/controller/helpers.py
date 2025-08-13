@@ -14,21 +14,20 @@ from .client import get
 logger = logging.getLogger(__name__)
 
 
-def build_collection_uri(collection: str, version: str) -> str:
+def build_collection_uri(collection_name: str, version: str) -> str:
     """
     Builds the full URI for a given collection and version.
 
     Args:
-        collection (str): The collection name.
+        collection_name (str): The collection name.
         version (str): The version string.
 
     Returns:
         str: The full URI to the collection artifact.
     """
+    collection = collection_name.replace(".", "-")
     path = "/api/galaxy/v3/plugin/ansible/content/published/collections/artifacts"
     filename = f"{collection}-{version}.tar.gz"
-
-    print("Filename", filename)
 
     return urljoin(f"{settings.AAP_URL}/", f"{path}/{filename}")
 
@@ -47,11 +46,10 @@ def download_collection(collection_name: str, version: str) -> Iterator[str]:
         The path to the extracted collection files.
     """
     response = None
-    collection = collection_name.replace(".", "-")
     temp_base_dir = tempfile.mkdtemp()
-    collection_path = os.path.join(temp_base_dir, f"{collection}-{version}")
+    collection_path = os.path.join(temp_base_dir, f"{collection_name}-{version}")
     os.makedirs(collection_path, exist_ok=True)
-    path = build_collection_uri(collection, version)
+    path = build_collection_uri(collection_name, version)
 
     try:
         response = get(path)
@@ -62,4 +60,6 @@ def download_collection(collection_name: str, version: str) -> Iterator[str]:
         logger.info(f"Collection extracted to {collection_path}")
         yield collection_path  # Yield the path to the caller
     finally:
+        if response:
+            response.close()  # Explicitly close the response object
         shutil.rmtree(temp_base_dir)
