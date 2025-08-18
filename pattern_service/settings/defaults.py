@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "core",
+    "ansible_base.resource_registry",
 ]
 
 MIDDLEWARE = [
@@ -132,4 +133,13 @@ DISPATCHER_CONFIG = {
         "socket": {"socket_path": "pattern_service_dispatcher.sock"},
     },
     "publish": {"default_control_broker": "socket", "default_broker": "pg_notify"},
+}
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "core.authentication.PatternServiceAuthentication",
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "ansible_base.lib.utils.views.permissions.IsSuperuser",
+    ],
 }
