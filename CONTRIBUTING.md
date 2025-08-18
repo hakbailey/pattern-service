@@ -13,10 +13,11 @@ Hi there! We're excited to have you as a contributor.
     - [Set env variables for development](#set-env-variables-for-development)
     - [Configure postgres and run the dispatcher service](#configure-postgres-and-run-the-dispatcher-service)
     - [Configure and run the application](#configure-and-run-the-application)
-    - [Development configuration](#development-configuration)
+    - [Development Configuration](#development-configuration)
   - [Updating dependencies](#updating-dependencies)
   - [Running linters and code checks](#running-linters-and-code-checks)
   - [Running tests](#running-tests)
+  - [Building API Documentation](#building-api-documentation)
 
 ## Things to know prior to submitting code
 
@@ -97,7 +98,7 @@ AAP_USERNAME = "admin"                    # Username for AAP authentication
 AAP_PASSWORD = "password"                 # Password for AAP authentication
 ```
 
-*Note*: These defaults are placeholders for local development only. You must provide proper values for your environment by setting environment variables prefixed with `PATTERN_SERVICE_` or via a `.env` file.
+_Note_: These defaults are placeholders for local development only. You must provide proper values for your environment by setting environment variables prefixed with `PATTERN_SERVICE_` or via a `.env` file.
 For example:
 
 ```bash
@@ -136,3 +137,9 @@ Running the tests requires a postgres connection. The easiest way to do this is 
 ```bash
 make test
 ```
+
+## Building API Documentation
+
+The pattern service includes support for generating an OpenAPI Description of the API. To build the documentation locally, run `make generate-api-spec`.
+
+HTML-rendered API documentation can also be accessed within the running application at `http://localhost:8000/api/pattern-service/v1/docs/` or `http://localhost:8000/api/pattern-service/v1/docs/redoc/`
