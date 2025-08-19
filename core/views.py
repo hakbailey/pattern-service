@@ -31,17 +31,20 @@ class CoreViewSet(AnsibleBaseView):
 @extend_schema_view(
     create=extend_schema(
         description="Add an Ansible pattern to the service.",
-        examples=[api_examples.pattern_post, api_examples.pattern_post_response],
+        examples=[
+            api_examples.pattern_post_request,
+            api_examples.pattern_post_response,
+        ],
     ),
     list=extend_schema(
         description=(
             "Retrieve information about all Ansible patterns added to the service."
         ),
-        examples=[api_examples.pattern_response],
+        examples=[api_examples.pattern_get_response],
     ),
     retrieve=extend_schema(
         description="Retrieve information about a single Ansible pattern by ID.",
-        examples=[api_examples.pattern_response],
+        examples=[api_examples.pattern_get_response],
     ),
 )
 class PatternViewSet(CoreViewSet, ModelViewSet):
@@ -76,11 +79,11 @@ class PatternViewSet(CoreViewSet, ModelViewSet):
         description=(
             "Retrieve information about all controller labels created by the service."
         ),
-        examples=[api_examples.controller_label_response],
+        examples=[api_examples.controller_label_get_response],
     ),
     retrieve=extend_schema(
         description="Retrieve information about a single controller label by ID.",
-        examples=[api_examples.controller_label_response],
+        examples=[api_examples.controller_label_get_response],
     ),
 )
 class ControllerLabelViewSet(CoreViewSet, ModelViewSet):
@@ -96,17 +99,17 @@ class ControllerLabelViewSet(CoreViewSet, ModelViewSet):
             " and saving their IDs."
         ),
         examples=[
-            api_examples.pattern_instance_post,
+            api_examples.pattern_instance_post_request,
             api_examples.pattern_instance_post_response,
         ],
     ),
     list=extend_schema(
         description="Retrieve information about all pattern instances.",
-        examples=[api_examples.pattern_instance_response],
+        examples=[api_examples.pattern_instance_get_response],
     ),
     retrieve=extend_schema(
         description="Retrieve information about a single pattern instance by ID.",
-        examples=[api_examples.pattern_instance_response],
+        examples=[api_examples.pattern_instance_get_response],
     ),
 )
 class PatternInstanceViewSet(CoreViewSet, ModelViewSet):
@@ -139,11 +142,11 @@ class PatternInstanceViewSet(CoreViewSet, ModelViewSet):
 @extend_schema_view(
     list=extend_schema(
         description="Retrieve information about all automations created by the service.",
-        examples=[api_examples.automation_response],
+        examples=[api_examples.automation_get_response],
     ),
     retrieve=extend_schema(
         description="Retrieve information about a single automation by ID.",
-        examples=[api_examples.automation_response],
+        examples=[api_examples.automation_get_response],
     ),
 )
 class AutomationViewSet(CoreViewSet, ModelViewSet):
@@ -155,11 +158,11 @@ class AutomationViewSet(CoreViewSet, ModelViewSet):
 @extend_schema_view(
     list=extend_schema(
         description="Retrieve information about all tasks created by the service.",
-        examples=[api_examples.task_response],
+        examples=[api_examples.task_get_response],
     ),
     retrieve=extend_schema(
         description="Retrieve information about a single task by ID.",
-        examples=[api_examples.task_response],
+        examples=[api_examples.task_get_response],
     ),
 )
 class TaskViewSet(CoreViewSet, ReadOnlyModelViewSet):

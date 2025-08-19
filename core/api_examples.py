@@ -1,7 +1,7 @@
 from drf_spectacular.utils import OpenApiExample
 
-automation_response = OpenApiExample(
-    "Sample automation response",
+automation_get_response = OpenApiExample(
+    "Sample automation GET response",
     value={
         "id": 1,
         "url": "/api/pattern-service/v1/automations/1/",
@@ -19,8 +19,8 @@ automation_response = OpenApiExample(
     response_only=True,
 )
 
-controller_label_response = OpenApiExample(
-    "Sample controller label response",
+controller_label_get_response = OpenApiExample(
+    "Sample controller label GET response",
     value={
         "id": 1,
         "url": "/api/pattern-service/v1/controller_labels/1/",
@@ -35,26 +35,7 @@ controller_label_response = OpenApiExample(
     response_only=True,
 )
 
-pattern_post = OpenApiExample(
-    "Sample pattern POST",
-    value={
-        "collection_name": "mynamespace.mycollection",
-        "collection_version": "1.0.0",
-        "pattern_name": "mypattern",
-    },
-    request_only=True,
-)
-
-pattern_post_response = OpenApiExample(
-    "Sample pattern POST response",
-    value={
-        "message": "Pattern creation initiated. Check task status for progress.",
-        "task_id": 1,
-    },
-    response_only=True,
-)
-
-pattern_response = OpenApiExample(
+pattern_get_response = OpenApiExample(
     "Sample pattern GET response",
     value={
         "id": 1,
@@ -74,8 +55,52 @@ pattern_response = OpenApiExample(
     response_only=True,
 )
 
-pattern_instance_post = OpenApiExample(
-    "Sample pattern instance POST",
+pattern_post_request = OpenApiExample(
+    "Sample pattern POST request",
+    value={
+        "collection_name": "mynamespace.mycollection",
+        "collection_version": "1.0.0",
+        "pattern_name": "mypattern",
+    },
+    request_only=True,
+)
+
+pattern_post_response = OpenApiExample(
+    "Sample pattern POST response",
+    value={
+        "message": "Pattern creation initiated. Check task status for progress.",
+        "task_id": 1,
+    },
+    response_only=True,
+)
+
+pattern_instance_get_response = OpenApiExample(
+    "Sample pattern instance GET response",
+    value={
+        "id": 1,
+        "url": "/api/pattern-service/v1/pattern_instances/1/",
+        "related": {"pattern": "/api/pattern-service/v1/patterns/1/"},
+        "summary_fields": {"pattern": {"id": 1}},
+        "created": "2025-06-25T01:02:03Z",
+        "created_by": None,
+        "modified": "2025-06-25T01:02:03Z",
+        "modified_by": None,
+        "organization_id": 1,
+        "controller_project_id": None,
+        "controller_ee_id": None,
+        "controller_labels": [1],
+        "credentials": {"ee": 1, "project": 2},
+        "executors": {
+            "teams": [1, 2],
+            "users": [1, 2, 3],
+        },
+        "pattern": 1,
+    },
+    response_only=True,
+)
+
+pattern_instance_post_request = OpenApiExample(
+    "Sample pattern instance POST request",
     value={
         "organization_id": 1,
         "credentials": {
@@ -102,33 +127,8 @@ pattern_instance_post_response = OpenApiExample(
     response_only=True,
 )
 
-pattern_instance_response = OpenApiExample(
-    "Sample pattern instance response",
-    value={
-        "id": 1,
-        "url": "/api/pattern-service/v1/pattern_instances/1/",
-        "related": {"pattern": "/api/pattern-service/v1/patterns/1/"},
-        "summary_fields": {"pattern": {"id": 1}},
-        "created": "2025-06-25T01:02:03Z",
-        "created_by": None,
-        "modified": "2025-06-25T01:02:03Z",
-        "modified_by": None,
-        "organization_id": 1,
-        "controller_project_id": None,
-        "controller_ee_id": None,
-        "controller_labels": [1],
-        "credentials": {"ee": 1, "project": 2},
-        "executors": {
-            "teams": [1, 2],
-            "users": [1, 2, 3],
-        },
-        "pattern": 1,
-    },
-    response_only=True,
-)
-
-task_response = OpenApiExample(
-    "Sample task response",
+task_get_response = OpenApiExample(
+    "Sample task GET response",
     value={
         "id": 1,
         "url": "/api/pattern-service/v1/tasks/1/",
