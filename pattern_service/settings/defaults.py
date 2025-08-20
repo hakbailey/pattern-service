@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "core",
     "ansible_base.resource_registry",
+    "ansible_base.rbac",
 ]
 
 MIDDLEWARE = [

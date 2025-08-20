@@ -15,7 +15,7 @@ license = "Apache-2.0"
 license-files = ["LICENSE.md"]
 requires-python = ">=3.11,<3.14"
 dependencies = [
-    "django-ansible-base[resource_registry]==2025.5.8",
+    "django-ansible-base[resource_registry]==2025.8.18",
     "dispatcherd",
     "psycopg",
     "requests>=2.31.0,<3.0",
