@@ -12,7 +12,7 @@ def client():
 
 
 @pytest.fixture()
-def automation(db, pattern_instance) -> models.Automation:
+def automation(django_db_reset_sequences, pattern_instance) -> models.Automation:
     automation = models.Automation.objects.create(
         automation_type=api_examples.automation_get_response.value["automation_type"],
         automation_id=api_examples.automation_get_response.value["automation_id"],
@@ -23,7 +23,7 @@ def automation(db, pattern_instance) -> models.Automation:
 
 
 @pytest.fixture()
-def controller_label(db) -> models.ControllerLabel:
+def controller_label(django_db_reset_sequences) -> models.ControllerLabel:
     controller_label = models.ControllerLabel.objects.create(
         label_id=api_examples.controller_label_get_response.value["label_id"]
     )
@@ -31,7 +31,7 @@ def controller_label(db) -> models.ControllerLabel:
 
 
 @pytest.fixture()
-def pattern(db) -> models.Pattern:
+def pattern(django_db_reset_sequences) -> models.Pattern:
     pattern = models.Pattern.objects.create(
         collection_name=api_examples.pattern_post_request.value["collection_name"],
         collection_version=api_examples.pattern_post_request.value[
@@ -43,7 +43,7 @@ def pattern(db) -> models.Pattern:
 
 
 @pytest.fixture()
-def pattern_instance(db, pattern) -> models.PatternInstance:
+def pattern_instance(django_db_reset_sequences, pattern) -> models.PatternInstance:
     pattern_instance = models.PatternInstance.objects.create(
         credentials=api_examples.pattern_instance_post_request.value["credentials"],
         executors=api_examples.pattern_instance_post_request.value["executors"],
@@ -54,7 +54,7 @@ def pattern_instance(db, pattern) -> models.PatternInstance:
 
 
 @pytest.fixture()
-def task(db) -> models.Task:
+def task(django_db_reset_sequences) -> models.Task:
     task = models.Task.objects.create(
         status=api_examples.task_get_response.value["status"],
         details=api_examples.task_get_response.value["details"],

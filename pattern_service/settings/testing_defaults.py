@@ -7,19 +7,11 @@ SECRET_KEY = "insecure"
 DB_NAME = "test_pattern_db"
 DB_USER = "postgres"
 DB_PASSWORD = "insecure"
+DB_PORT = 5432
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    },
-    "dispatcher": {
-        "ENGINE": "django.db.backends.postgresql",
-        "HOST": "localhost",
-        "PORT": 5432,
-        "PASSWORD": DB_PASSWORD,
-        "NAME": DB_NAME,
-    },
+    "default": {"TEST": {"NAME": DB_NAME}},
+    "dispatcher": {},
 }
 
 # Base URL of your AAP service

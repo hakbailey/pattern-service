@@ -1,9 +1,13 @@
 from pathlib import Path
 
-ALLOWED_HOSTS = ["localhost", "pattern-service", "127.0.0.1"]
+ALLOWED_HOSTS = ["localhost", "pattern-service", "pattern-service-api", "127.0.0.1"]
 BASE_DIR = Path(__file__).resolve().parent.parent
 DEBUG = True
 SECRET_KEY = "insecure"
+
+DB_NAME = "pattern_db"
+DB_USER = "pattern"
+DB_PASSWORD = "pattern123"
 
 # Logging
 LOGGING = {

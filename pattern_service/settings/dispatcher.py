@@ -32,20 +32,38 @@ def override_dispatcher_settings(loaded_settings: Dynaconf) -> None:
     db_sslkey = loaded_settings.get("DB_SSLKEY", default="")
     db_sslrootcert = loaded_settings.get("DB_SSLROOTCERT", default="")
 
-    databases["dispatcher"] = {
-        "ENGINE": "django.db.backends.postgresql",
-        "HOST": db_host,
-        "PORT": db_port,
-        "USER": db_user,
-        "PASSWORD": db_user_pass,
-        "NAME": db_name,
-        "OPTIONS": {
-            "sslmode": db_sslmode,
-            "sslcert": db_sslcert,
-            "sslkey": db_sslkey,
-            "sslrootcert": db_sslrootcert,
-        },
-    }
+    databases["default"].update(
+        {
+            "ENGINE": "django.db.backends.postgresql",
+            "HOST": db_host,
+            "PORT": db_port,
+            "USER": db_user,
+            "PASSWORD": db_user_pass,
+            "NAME": db_name,
+            "OPTIONS": {
+                "sslmode": db_sslmode,
+                "sslcert": db_sslcert,
+                "sslkey": db_sslkey,
+                "sslrootcert": db_sslrootcert,
+            },
+        }
+    )
+    databases["dispatcher"].update(
+        {
+            "ENGINE": "django.db.backends.postgresql",
+            "HOST": db_host,
+            "PORT": db_port,
+            "USER": db_user,
+            "PASSWORD": db_user_pass,
+            "NAME": db_name,
+            "OPTIONS": {
+                "sslmode": db_sslmode,
+                "sslcert": db_sslcert,
+                "sslkey": db_sslkey,
+                "sslrootcert": db_sslrootcert,
+            },
+        }
+    )
 
     dispatcher_conninfo = (
         f"dbname={db_name} user={db_user} password={db_user_pass} "

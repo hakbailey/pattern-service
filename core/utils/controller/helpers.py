@@ -28,6 +28,7 @@ from core.models import PatternInstance
 
 from ..http_helpers import RetryError
 from .client import get
+from .client import get_http_session
 from .client import post
 
 logger = logging.getLogger(__name__)
@@ -71,13 +72,14 @@ def download_collection(collection_name: str, version: str) -> Iterator[str]:
     path = build_collection_uri(collection_name, version)
 
     try:
-        response = get(path)
+        with contextlib.closing(get_http_session()) as session:
+            response = get(session, path)
 
-        with tarfile.open(fileobj=response.raw, mode="r|gz") as tar:
-            tar.extractall(path=collection_path, filter="data")
+            with tarfile.open(fileobj=response.raw, mode="r|gz") as tar:
+                tar.extractall(path=collection_path, filter="data")
 
-        logger.info(f"Collection extracted to {collection_path}")
-        yield collection_path  # Yield the path to the caller
+            logger.info(f"Collection extracted to {collection_path}")
+            yield collection_path  # Yield the path to the caller
     finally:
         if response:
             response.close()  # Explicitly close the response object
@@ -152,8 +154,15 @@ def create_labels(
     for name in pattern_def["aap_resources"]["controller_labels"]:
         label_def = {"name": name, "organization": instance.organization_id}
         logger.debug(f"Creating label with definition: {label_def}")
-
-        results = post(session, "/api/controller/v2/labels/", label_def)
+        try:
+            results = post(session, "/api/controller/v2/labels/", label_def)
+        except HTTPError as e:
+            if e.response.status_code == 400:
+                url = urllib.parse.urljoin(
+                    settings.AAP_URL, f"/api/controller/v2/labels/?name={name}"
+                )
+                label_response = get(session, url)
+                results = label_response.json()["results"][0]
         label_obj, _ = ControllerLabel.objects.get_or_create(label_id=results["id"])
         labels.append(label_obj)
 
@@ -194,6 +203,8 @@ def create_job_templates(
             ),
             "ask_inventory_on_launch": True,
         }
+        if survey:
+            jt_payload["survey_enabled"] = True
 
         logger.debug(f"Creating job template with payload: {jt_payload}")
         jt_res = post(session, "/api/controller/v2/job_templates/", jt_payload)
@@ -212,7 +223,7 @@ def create_job_templates(
     return automations
 
 
-def create_controller_role_assignment(
+def create_role_assignment(
     session: requests.Session,
     assignee_type: Literal["team", "user"],
     object_id: str,
@@ -222,10 +233,10 @@ def create_controller_role_assignment(
     data = {
         "object_id": object_id,
         "role_definition": role_id,
-        f"{assignee_type}_ansible_id": assignee_id,
+        f"{assignee_type}": assignee_id,
     }
     logger.debug(f"Role assignment data: {data}")
-    post(session, f"/api/controller/v2/role_{assignee_type}_assignments/", data)
+    post(session, f"/api/gateway/v1/role_{assignee_type}_assignments/", data)
 
 
 def get_role_definition_id(session: requests.Session, role_name: str) -> Optional[str]:
@@ -239,7 +250,7 @@ def get_role_definition_id(session: requests.Session, role_name: str) -> Optiona
         Optional[str]: The role ID if found, otherwise None.
     """
     params = {"name": role_name}
-    url = urllib.parse.urljoin(settings.AAP_URL, "/api/controller/v2/role_definitions/")
+    url = urllib.parse.urljoin(settings.AAP_URL, "/api/gateway/v1/role_definitions/")
 
     try:
         result = session.get(url, params=params)
@@ -286,14 +297,10 @@ def assign_execute_roles(
         jt_id = automation["id"]
 
         for team in executors.get("teams", []):
-            create_controller_role_assignment(
-                session, "team", jt_id, role_id, str(team)
-            )
+            create_role_assignment(session, "team", jt_id, role_id, str(team))
 
         for user in executors.get("users", []):
-            create_controller_role_assignment(
-                session, "user", jt_id, role_id, str(user)
-            )
+            create_role_assignment(session, "user", jt_id, role_id, str(user))
 
 
 def wait_for_project_sync(

@@ -103,21 +103,17 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    },
+DATABASES: dict = {
+    "default": {},
     "dispatcher": {},
 }
 
+DISPATCHERD_DEFAULT_CHANNEL = "pattern-service-tasks"
 DISPATCHER_CONFIG = {
     "version": 2,
     "service": {
         "main_kwargs": {"node_id": "pattern-service-a"},
-        "process_manager_kwargs": {
-            "preload_modules": ["pattern_service.core.tasks.hazmat"]
-        },
+        "process_manager_kwargs": {"preload_modules": ["core.tasks.hazmat"]},
     },
     "brokers": {
         "pg_notify": {
@@ -127,13 +123,11 @@ DISPATCHER_CONFIG = {
                     "host=postgres port=5432 application_name=dispatcher_pattern_service"
                 )
             },
-            "sync_connection_factory": "dispatcherd.brokers.pg_notify.connection_saver",
-            "channels": ["pattern-service-tasks"],
-            "default_publish_channel": "pattern-service-tasks",
+            "channels": [DISPATCHERD_DEFAULT_CHANNEL],
+            "default_publish_channel": DISPATCHERD_DEFAULT_CHANNEL,
         },
-        "socket": {"socket_path": "pattern_service_dispatcher.sock"},
     },
-    "publish": {"default_control_broker": "socket", "default_broker": "pg_notify"},
+    "publish": {"default_broker": "pg_notify"},
 }
 
 SPECTACULAR_SETTINGS = {

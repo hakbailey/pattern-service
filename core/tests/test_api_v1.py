@@ -39,7 +39,8 @@ def test_list_controller_labels_success(client, controller_label):
     assert response.json() == [api_examples.controller_label_get_response.value]
 
 
-def test_create_pattern_success(client, db):
+@pytest.mark.django_db()
+def test_create_pattern_success(client):
     url = "/api/pattern-service/v1/patterns/"
     data = api_examples.pattern_post_request.value
     response = client.post(url, data, format="json")
@@ -61,6 +62,7 @@ def test_list_patterns_success(client, pattern):
     assert response.json() == [api_examples.pattern_get_response.value]
 
 
+@pytest.mark.django_db()
 def test_create_pattern_instance_success(client, pattern):
     url = "/api/pattern-service/v1/pattern_instances/"
     data = api_examples.pattern_instance_post_request.value

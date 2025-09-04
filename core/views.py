@@ -22,6 +22,9 @@ from core.serializers import PatternInstanceSerializer
 from core.serializers import PatternSerializer
 from core.serializers import TaskSerializer
 from core.tasks.demo import sumbit_hello_world
+from core.tasks.patterns import create_pattern
+from core.tasks.patterns import create_pattern_instance
+from core.tasks.patterns import submit_pattern_task
 
 
 class CoreViewSet(AnsibleBaseView):
@@ -60,6 +63,8 @@ class PatternViewSet(CoreViewSet, ModelViewSet):
         task = Task.objects.create(
             status="Initiated", details={"model": "Pattern", "id": pattern.id}
         )
+
+        submit_pattern_task(create_pattern, pattern.pk, task.pk)
 
         headers = self.get_success_headers(serializer.data)
         return Response(
@@ -128,6 +133,8 @@ class PatternInstanceViewSet(CoreViewSet, ModelViewSet):
         task = Task.objects.create(
             status="Initiated", details={"model": "PatternInstance", "id": instance.id}
         )
+
+        submit_pattern_task(create_pattern_instance, instance.pk, task.pk)
 
         headers = self.get_success_headers(serializer.data)
         return Response(

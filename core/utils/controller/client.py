@@ -23,11 +23,12 @@ def get_http_session() -> Session:
     return session
 
 
-def get(url: str, *, params: Optional[Dict] = None) -> requests.Response:
-    with get_http_session() as session:
-        response = session.get(url, params=params, stream=True)
-        response.raise_for_status()
-        return response
+def get(
+    session: Session, url: str, *, params: Optional[Dict] = None
+) -> requests.Response:
+    response = session.get(url, params=params, stream=True)
+    response.raise_for_status()
+    return response
 
 
 def post(session: requests.Session, path: str, data: Dict) -> Dict[str, Any]:
@@ -49,5 +50,7 @@ def post(session: requests.Session, path: str, data: Dict) -> Dict[str, Any]:
         response.raise_for_status()
         return safe_json(lambda: response)()
 
-    except requests.exceptions.HTTPError:
+    except requests.exceptions.HTTPError as e:
+        logger.error(e.response.reason)
+        logger.error(e.response.json())
         raise

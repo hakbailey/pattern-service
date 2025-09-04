@@ -26,7 +26,7 @@ django==4.2.23
     #   django-crum
     #   djangorestframework
     #   drf-spectacular
-django-ansible-base[api-documentation]==2025.5.8
+django-ansible-base[api-documentation]==2025.8.18
     # via pattern_service (pyproject.toml)
 django-crum==0.7.9
     # via django-ansible-base
