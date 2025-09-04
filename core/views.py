@@ -5,8 +5,10 @@ from drf_spectacular.utils import extend_schema
 from drf_spectacular.utils import extend_schema_view
 from rest_framework import status
 from rest_framework.decorators import api_view
+from rest_framework.permissions import AllowAny
 from rest_framework.request import Request
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
@@ -181,9 +183,11 @@ class TaskViewSet(CoreViewSet, ReadOnlyModelViewSet):
 
 
 @extend_schema(exclude=True)
-@api_view(["GET"])
-def ping(request: Request) -> Response:
-    return Response(data={"status": "ok"}, status=200)
+class PingView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request: Request) -> Response:
+        return Response(data={"status": "ok"}, status=status.HTTP_200_OK)
 
 
 @extend_schema(exclude=True)

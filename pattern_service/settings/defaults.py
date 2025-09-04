@@ -136,3 +136,12 @@ SPECTACULAR_SETTINGS = {
     "VERSION": "v1",
     "SCHEMA_PATH_PREFIX": "/api/pattern-service/v1/",
 }
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "core.authentication.PatternServiceAuthentication",
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "ansible_base.lib.utils.views.permissions.IsSuperuser",
+    ],
+}

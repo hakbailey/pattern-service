@@ -53,7 +53,9 @@ def build_collection_uri(collection_name: str, version: str) -> str:
 
 
 @contextlib.contextmanager
-def download_collection(collection_name: str, version: str) -> Iterator[str]:
+def download_collection(
+    collection_name: str, version: str, token: str
+) -> Iterator[str]:
     """
     Downloads and extracts a collection tarball from private automation hub to a
     temporary directory.
@@ -69,11 +71,11 @@ def download_collection(collection_name: str, version: str) -> Iterator[str]:
     temp_base_dir = tempfile.mkdtemp()
     collection_path = os.path.join(temp_base_dir, f"{collection_name}-{version}")
     os.makedirs(collection_path, exist_ok=True)
-    path = build_collection_uri(collection_name, version)
+    url = build_collection_uri(collection_name, version)
 
     try:
-        with contextlib.closing(get_http_session()) as session:
-            response = get(session, path)
+        with contextlib.closing(get_http_session(token)) as session:
+            response = get(session, url)
 
             with tarfile.open(fileobj=response.raw, mode="r|gz") as tar:
                 tar.extractall(path=collection_path, filter="data")

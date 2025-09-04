@@ -16,6 +16,7 @@ DATABASES = {
 
 # Base URL of your AAP service
 AAP_URL = "http://localhost:44926"  # or your default URL
+AAP_INTERNAL_URL = "http://myaap"
 
 # Whether to verify SSL certificates (True or False)
 AAP_VALIDATE_CERTS = False

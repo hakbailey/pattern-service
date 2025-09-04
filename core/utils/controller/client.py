@@ -7,25 +7,25 @@ from typing import Optional
 import requests
 from django.conf import settings
 from requests import Session
-from requests.auth import HTTPBasicAuth
 
 from ..http_helpers import safe_json
 
 logger = logging.getLogger(__name__)
 
 
-def get_http_session() -> Session:
+def get_http_session(token: str) -> Session:
     """Creates and returns a new Session instance with AAP credentials."""
     session = Session()
-    session.auth = HTTPBasicAuth(settings.AAP_USERNAME, settings.AAP_PASSWORD)
     session.verify = settings.AAP_VALIDATE_CERTS
     session.headers.update({"Content-Type": "application/json"})
+    session.headers.update({"X-DAB-JW-TOKEN": token})
     return session
 
 
 def get(
     session: Session, url: str, *, params: Optional[Dict] = None
 ) -> requests.Response:
+    logger.debug(f"GET URL: {url}")
     response = session.get(url, params=params, stream=True)
     response.raise_for_status()
     return response
@@ -44,6 +44,7 @@ def post(session: requests.Session, path: str, data: Dict) -> Dict[str, Any]:
         requests.HTTPError
     """
     url = urllib.parse.urljoin(settings.AAP_URL, path)
+    logger.debug(f"POST URL: {url}")
 
     try:
         response = session.post(url, json=data)

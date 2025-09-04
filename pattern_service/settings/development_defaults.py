@@ -49,11 +49,9 @@ LOGGING = {
 }
 
 # Base URL of your AAP service
-AAP_URL = "http://localhost:44926"  # or your default URL
+# This is the base internal URL for aap-dev, update if developing outside the
+# aap-dev environment
+AAP_URL = "http://myaap"
 
 # Whether to verify SSL certificates (True or False)
 AAP_VALIDATE_CERTS = False
-
-# Default username and password for authentication
-AAP_USERNAME = "admin"
-AAP_PASSWORD = "password"

@@ -34,7 +34,7 @@ def submit_pattern_task(task_function: Callable, *args: tuple) -> str:
 
 
 @task(queue=settings.DISPATCHERD_DEFAULT_CHANNEL, decorate=False)
-def create_pattern(pattern_id: int, task_id: int) -> None:
+def create_pattern(pattern_id: int, task_id: int, token: str) -> None:
     """
     Orchestrates downloading a collection and saving a pattern definition.
 
@@ -52,7 +52,7 @@ def create_pattern(pattern_id: int, task_id: int) -> None:
         pattern = Pattern.objects.get(id=pattern_id)
         task.mark_running({"info": "Processing pattern"})
         with download_collection(
-            pattern.collection_name, pattern.collection_version
+            pattern.collection_name, pattern.collection_version, token
         ) as collection_path:
             path_to_definition = os.path.join(
                 collection_path,
@@ -80,7 +80,8 @@ def create_pattern(pattern_id: int, task_id: int) -> None:
         task.mark_failed({"error": error_message})
 
 
-def create_pattern_instance(instance_id: int, task_id: int) -> None:
+@task(queue=settings.DISPATCHERD_DEFAULT_CHANNEL, decorate=False)
+def create_pattern_instance(instance_id: int, task_id: int, token: str) -> None:
     task = Task.objects.get(id=task_id)
     try:
         instance = PatternInstance.objects.select_related("pattern").get(id=instance_id)
@@ -91,7 +92,7 @@ def create_pattern_instance(instance_id: int, task_id: int) -> None:
             raise ValueError("Pattern definition is missing.")
 
         # Create a single session for all AAP calls
-        with closing(get_http_session()) as session:
+        with closing(get_http_session(token)) as session:
             task.mark_running({"info": "Creating controller project"})
             project_id = create_project(session, instance, pattern)
             task.mark_running({"info": "Creating execution environment"})

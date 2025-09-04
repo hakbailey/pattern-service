@@ -15,11 +15,7 @@ class CoreConfig(AppConfig):
 
     def ready(self) -> None:
         # List of required AAP variables
-        required_vars = [
-            "AAP_URL",
-            "AAP_USERNAME",
-            "AAP_PASSWORD",
-        ]
+        required_vars = ["AAP_URL"]
 
         # Check that each required setting is defined
         missing = [var for var in required_vars if not getattr(settings, var, None)]

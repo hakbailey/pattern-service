@@ -9,7 +9,7 @@ from django.contrib import admin
 from django.urls import include
 from django.urls import path
 
-from core.views import ping
+from core.views import PingView
 from core.views import test
 
 urlpatterns = [
@@ -18,6 +18,7 @@ urlpatterns = [
     path("api/pattern-service/v1/", include(api_version_urls)),
     path("api/pattern-service/", include(api_urls)),
     path("", include(root_urls)),
-    path("ping/", ping),
+    path("ping/", PingView.as_view()),
+    path("api/pattern-service/v1/ping/", PingView.as_view()),
     path("api/pattern-service/v1/test/", test),
 ]
